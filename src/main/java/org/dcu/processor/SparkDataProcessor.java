@@ -4,7 +4,10 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-import org.dcu.database.ConnectionManager;
+import org.dcu.database.MoralisConnectionManager;
+
+import static org.dcu.database.MoralisConnectionManager.TABLE_NFT_CONTRACTS;
+import static org.dcu.database.MoralisConnectionManager.TABLE_NFT_TRANSFERS;
 
 public class SparkDataProcessor {
     public static void main(String[] args) {
@@ -21,10 +24,10 @@ public class SparkDataProcessor {
         System.out.println(">>>> Spark session : " + spark);
 
         // read from GCP MySQL database
-        String tableName = "krys_nft_contracts";
+        String tableName = TABLE_NFT_CONTRACTS;
         System.out.println(">>>> Table name : " + tableName);
-        ConnectionManager connectionManager = new ConnectionManager();
-        Dataset<Row> nft_contracts = spark.read().jdbc(connectionManager.getUrl(), tableName, connectionManager.getProps()).select("json_data");
+        MoralisConnectionManager moralisConnectionManager = new MoralisConnectionManager();
+        Dataset<Row> nft_contracts = spark.read().jdbc(moralisConnectionManager.getUrl(), tableName, moralisConnectionManager.getProps()).select("json_data");
         nft_contracts.show();
 
         //count data form nft_contracts

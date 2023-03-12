@@ -2,15 +2,15 @@ package org.dcu.database;
 
 import java.util.Properties;
 
-public class ConnectionManager {
+public class DcuSparkConnectionManager {
 
     private String driverClass = "com.mysql.cj.jdbc.Driver";
 
     private Properties props = new Properties();
 
-    private String url = "jdbc:mysql://35.193.69.26:3306/moralis";
+    private String url = "jdbc:mysql://35.193.69.26:3306/dcu_spark";
 
-    public ConnectionManager() {
+    public DcuSparkConnectionManager() {
         // define JDBC connection properties
 
         props.setProperty("driver", driverClass);
