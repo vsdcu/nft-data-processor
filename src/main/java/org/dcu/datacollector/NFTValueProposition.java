@@ -26,12 +26,14 @@ public class NFTValueProposition {
         Dataset<Row> df = spark.read()
                 .jdbc(MORALIS_CONNECTION_MANAGER.getUrl(), tableName, MORALIS_CONNECTION_MANAGER.getProps());
 
+        //df.show();
+
 //        Dataset<Row> firstTransfer = df.groupBy("nft_address", "token_id")
 //                .agg(first("value").as("first_value"));
 //        Dataset<Row> lastTransfer = df.groupBy("nft_address", "token_id")
 //                .agg(last("value").as("last_value"));
 
-        df.show();
+
 
         Dataset<Row> firstTransfer = df
                 .groupBy(col("nft_address"), col("token_id"))
@@ -85,9 +87,9 @@ public class NFTValueProposition {
 only showing top 20 rows
 */
 
-        firstTransfer.show();
-        lastTransfer.show();
-        difference.show();
+        //firstTransfer.show();
+        //lastTransfer.show();
+        //difference.show();
         System.out.println(" --------------- Data persisted into nft_value_propositions ----------------------- ");
     }
 }
