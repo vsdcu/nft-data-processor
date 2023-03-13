@@ -6,6 +6,7 @@ public class MoralisConnectionManager {
 
     public static final String TABLE_NFT_CONTRACTS = "krys_nft_contracts";
     public static final String TABLE_NFT_OPEN_SEA_TRADES = "krys_nft_open_sea_trades";
+
     public static final String TABLE_NFT_TRANSFERS = "krys_nft_transfer";
 
     private String driverClass = "com.mysql.cj.jdbc.Driver";

@@ -1,15 +1,8 @@
 package org.dcu.processor;
 
 import org.apache.spark.SparkConf;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-import org.dcu.CollectionTrades;
 import org.dcu.TopTraders;
-import org.dcu.database.MoralisConnectionManager;
-
-import static org.dcu.database.MoralisConnectionManager.TABLE_NFT_CONTRACTS;
-import static org.dcu.database.MoralisConnectionManager.TABLE_NFT_TRANSFERS;
 
 public class SparkDataProcessor {
 
@@ -25,23 +18,6 @@ public class SparkDataProcessor {
         SparkSession spark = SparkSession.builder().config(conf).getOrCreate();
 
         System.out.println(">>>> Spark session : " + spark);
-
-        // read from GCP MySQL database
-//        String tableName = TABLE_NFT_CONTRACTS;
-//        System.out.println(">>>> Table name : " + tableName);
-//        MoralisConnectionManager moralisConnectionManager = new MoralisConnectionManager();
-//        Dataset<Row> nft_contracts = spark.read().jdbc(moralisConnectionManager.getUrl(), tableName, moralisConnectionManager.getProps()).select("json_data");
-//        nft_contracts.show();
-
-        // read from GCP MySQL database
-        //String tableName = "krys_nft_contracts";
-        //System.out.println(">>>> Table name : " + tableName);
-
-        //Dataset<Row> nft_contracts = spark.read().jdbc(connectionManager.getUrl(), tableName, connectionManager.getProps()).select("json_data");
-        //nft_contracts.show();
-        //count data form nft_contracts
-        //long count = nft_contracts.count();
-        //System.out.println(">>>>>>>>>>>>>>>>>>>>>.Total records in table {"+tableName+"} : " + count);
 
         //find top buyers
         TopTraders.findTopBuyers(spark);
