@@ -57,7 +57,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.dcu.processor.SparkDataProcessor</mainClass>
+                            <mainClass>org.dcu.processor.SparkBuyerSellerProcessor</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
