@@ -8,7 +8,7 @@ public class ConnectionManager {
 
     private Properties props = new Properties();
 
-    private String url = "jdbc:mysql://35.193.69.26:3306/moralis";
+    private String url = "jdbc:mysql://35.193.69.26:3306/";
 
     public ConnectionManager() {
         // define JDBC connection properties
