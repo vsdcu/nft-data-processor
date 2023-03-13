@@ -14,6 +14,11 @@ import static org.dcu.database.MoralisConnectionManager.TABLE_NFT_TRANSFERS;
 
 /**
  * Create table with the total sum of transference by Buyer
+ *
+ * Ether value based on 10^18 that is the value of 1 wei
+ *
+ * https://ethereum.org/en/glossary/#wei
+ * https://www.alchemy.com/gwei-calculator
  */
 public class SparkNftBuyersProcessor {
 
@@ -33,11 +38,11 @@ public class SparkNftBuyersProcessor {
 
         originTransfersDataset.show();
 
-
         Dataset<Row> result = originTransfersDataset.groupBy("to_address")
                 .agg(sum(col("value")).alias("total"))
                 .withColumnRenamed("to_address", "buyer_address")
-                .withColumnRenamed("total", "total_value");
+                .withColumnRenamed("total", "total_value")
+                .withColumn("total_ether", col("total_value").divide(Math.pow(10, 18)));
 
 
         result.show();
@@ -45,7 +50,7 @@ public class SparkNftBuyersProcessor {
         DcuSparkConnectionManager dcuSparkConnectionManager = new DcuSparkConnectionManager();
         result.write()
                 .mode(SaveMode.Append)
-                .option("createTableColumnTypes", "buyer_address varchar(255), total_value DOUBLE")
+                .option("createTableColumnTypes", "buyer_address varchar(255), total_value DOUBLE, total_ether DOUBLE")
                 .jdbc(dcuSparkConnectionManager.getUrl(), "total_transferred_by_buyers", dcuSparkConnectionManager.getProps());
 
     }
