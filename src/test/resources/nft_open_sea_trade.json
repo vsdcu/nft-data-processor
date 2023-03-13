@@ -1,0 +1,16 @@
+{
+  "transaction_hash": "0x5fdb665659f203dafc070bc46a12e105b21be03eb879c432b8a2d7cf8c840f49",
+  "transaction_index": "166",
+  "token_ids": [
+    "13"
+  ],
+  "seller_address": "0xb5e34552f32ba9226c987769bf6555a538510ba8",
+  "buyer_address": "0xa4bf3313fc02b10732e11ae8cbb07cb3ecde87cb",
+  "token_address": "0x00000000000b7f8e8e8ad148f9d53303bfe20796",
+  "marketplace_address": "0x7be8076f4ea4a4ad08075c2508e481d6c946d12b",
+  "price": "42000000000000000",
+  "price_token_address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+  "block_timestamp": "2021-09-05T12:42:30.000Z",
+  "block_number": "13165789",
+  "block_hash": "0xa8a3667a98cf57712fe581a510e1416893c25dcea0ab7552b2c9cc7a7e5cfab6"
+}
