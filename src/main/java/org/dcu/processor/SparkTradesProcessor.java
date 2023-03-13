@@ -2,29 +2,19 @@ package org.dcu.processor;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.sql.SparkSession;
-import org.dcu.CollectionTrades;
-import org.dcu.TopTraders;
+import org.dcu.datacollector.CollectionTrades;
 
-public class SparkDataProcessor {
+public class SparkTradesProcessor {
 
     public static void main(String[] args) {
 
-        String SPARK_HOME = "/Users/vinit/spark_home/spark-3.3.2-bin-hadoop3";
-
         //spark configuration
         SparkConf conf = new SparkConf()
-                .setAppName("NFT-Data_Processor")
-                .set("spark.app.id", "spark-nft-processor");
+                .setAppName("Trade-Processor-Job")
+                .set("spark.app.id", "spark-trade-processor");
 
         SparkSession spark = SparkSession.builder().config(conf).getOrCreate();
-
-        System.out.println(">>>> Spark session : " + spark);
-
-        //find top buyers
-        TopTraders.findTopBuyers(spark);
-
-        //find top sellers
-        TopTraders.findTopSellers(spark);
+        System.out.println(">>>> Job to find the trades metrics : " + spark);
 
         //find total trades for each collection
         CollectionTrades.findTotalTradesByNFTCollection(spark);
@@ -35,10 +25,5 @@ public class SparkDataProcessor {
         spark.stop();
 
     }
-
-
-
-
-
 
 }
