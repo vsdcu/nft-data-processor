@@ -13,9 +13,9 @@ import static org.apache.spark.sql.functions.sum;
 import static org.dcu.database.MoralisConnectionManager.TABLE_NFT_TRANSFERS;
 
 /**
- * Create table with the total sum of transference by Buyer
+ * Create table with the total sum of transference by Seller
  */
-public class SparkNftBuyersProcessor {
+public class SparkNftSellersProcessor {
 
     public static void main(String[] args) {
 
@@ -28,15 +28,14 @@ public class SparkNftBuyersProcessor {
         MoralisConnectionManager moralisConnectionManager = new MoralisConnectionManager();
         Dataset<Row> originTransfersDataset = sparkSession.read().jdbc(moralisConnectionManager.getUrl(),
                 TABLE_NFT_TRANSFERS, moralisConnectionManager.getProps())
-                .select("to_address", "value");
+                .select("from_address", "value");
 
 
         originTransfersDataset.show();
 
-
-        Dataset<Row> result = originTransfersDataset.groupBy("to_address")
+        Dataset<Row> result = originTransfersDataset.groupBy("from_address")
                 .agg(sum(col("value")).alias("total"))
-                .withColumnRenamed("to_address", "buyer_address")
+                .withColumnRenamed("from_address", "seller_address")
                 .withColumnRenamed("total", "total_value");
 
 
@@ -45,8 +44,8 @@ public class SparkNftBuyersProcessor {
         DcuSparkConnectionManager dcuSparkConnectionManager = new DcuSparkConnectionManager();
         result.write()
                 .mode(SaveMode.Append)
-                .option("createTableColumnTypes", "buyer_address varchar(255), total_value DOUBLE")
-                .jdbc(dcuSparkConnectionManager.getUrl(), "total_transferred_by_buyers", dcuSparkConnectionManager.getProps());
+                .option("createTableColumnTypes", "seller_address varchar(255), total_value DOUBLE")
+                .jdbc(dcuSparkConnectionManager.getUrl(), "total_transferred_by_sellers", dcuSparkConnectionManager.getProps());
 
     }
 }
