@@ -2,6 +2,7 @@ package org.dcu.processor;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.sql.SparkSession;
+import org.dcu.CollectionTrades;
 import org.dcu.TopTraders;
 
 public class SparkDataProcessor {
@@ -23,13 +24,13 @@ public class SparkDataProcessor {
         TopTraders.findTopBuyers(spark);
 
         //find top sellers
-        //TopTraders.findTopSellers(spark);
+        TopTraders.findTopSellers(spark);
 
         //find total trades for each collection
-        //CollectionTrades.findTotalTradesByNFTCollection(spark);
+        CollectionTrades.findTotalTradesByNFTCollection(spark);
 
         //find total trades for each token-id present in collection
-        //CollectionTrades.findTotalTradesByTokenIdInNFTCollection(spark);
+        CollectionTrades.findTotalTradesByTokenIdInNFTCollection(spark);
 
         spark.stop();
 
