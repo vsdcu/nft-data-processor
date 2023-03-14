@@ -26,7 +26,7 @@ public class SparkNftContractDataProcessor {
                 TABLE_NFT_CONTRACTS, moralisConnectionManager.getProps())
                 .select("nft_address", "token_address", "token_id", "json_data");
 
-        originNfttDataset.show();
+        //originNfttDataset.show();
 
         Dataset<NftContractJson> nftEntityDataset = originNfttDataset.map(
                 (MapFunction<Row, NftContractJson>) row -> {
@@ -41,11 +41,11 @@ public class SparkNftContractDataProcessor {
         );
 
 
-        nftEntityDataset.show();
+        //nftEntityDataset.show();
 
         DcuSparkConnectionManager dcuSparkConnectionManager = new DcuSparkConnectionManager();
         nftEntityDataset.write()
-                .mode(SaveMode.Append)
+                .mode(SaveMode.Overwrite)
                 .jdbc(dcuSparkConnectionManager.getUrl(), "nft_contract_entity", dcuSparkConnectionManager.getProps());
 
     }
