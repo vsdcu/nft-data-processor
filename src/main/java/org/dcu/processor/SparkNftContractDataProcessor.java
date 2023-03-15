@@ -7,10 +7,14 @@ import org.apache.spark.sql.*;
 import org.dcu.database.DcuSparkConnectionManager;
 import org.dcu.database.MoralisConnectionManager;
 import org.dcu.json.NftContractJson;
+import org.dcu.mapper.NftContractMapper;
 
 import static org.dcu.database.MoralisConnectionManager.TABLE_NFT_CONTRACTS;
+import static org.dcu.database.MoralisConnectionManager.TABLE_NFT_TRANSFERS;
 
 public class SparkNftContractDataProcessor {
+
+    private static final String WRKR_EXECUTOR_MEMORY = "4g";
 
     private static Gson gson = new Gson();
 
@@ -19,12 +23,16 @@ public class SparkNftContractDataProcessor {
         SparkConf conf = new SparkConf()
                 .setAppName("Copy and Parse NftContract to DCU_Spark schema")
                 .set("spark.app.id", "spark-nft-contract-parse")
-                .set("spark.driver.memory", "1g")
-                .set("spark.executor.memory", "1g")
-                .set("spark.sql.shuffle.partitions", "100")
-                .set("spark.driver.maxResultSize", "512m")
+                .set("spark.executor.memory", args[0])
+                .set("spark.sql.shuffle.partitions", args[1])
+                .set("spark.driver.maxResultSize", args[2])
                 .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
                 .set("spark.kryo.registrationRequired", "false");
+
+        System.out.println("*********** Using optimization params as ************");
+        System.out.println("spark.executor.memory: "+args[0]);
+        System.out.println("spark.sql.shuffle.partitions: "+args[1]);
+        System.out.println("spark.driver.maxResultSize: "+args[2]);
 
         SparkSession sparkSession = SparkSession.builder().config(conf).getOrCreate();
 
@@ -51,7 +59,7 @@ public class SparkNftContractDataProcessor {
         );
 
 
-//        nftEntityDataset.show();
+        //nftEntityDataset.show();
 
         DcuSparkConnectionManager dcuSparkConnectionManager = new DcuSparkConnectionManager();
         nftEntityDataset.write()

@@ -12,7 +12,15 @@ public class SparkMintersProcessor {
         //spark configuration
         SparkConf conf = new SparkConf()
                 .setAppName("Minters-Processor-Job")
-                .set("spark.app.id", "spark-minters-processor");
+                .set("spark.app.id", "spark-minters-processor")
+                .set("spark.executor.memory", args[0])
+                .set("spark.sql.shuffle.partitions", args[1])
+                .set("spark.driver.maxResultSize", args[2]);
+
+        System.out.println("*********** Using optimization params as ************");
+        System.out.println("spark.executor.memory: "+args[0]);
+        System.out.println("spark.sql.shuffle.partitions: "+args[1]);
+        System.out.println("spark.driver.maxResultSize: "+args[2]);
 
         SparkSession spark = SparkSession.builder().config(conf).getOrCreate();
         System.out.println(">>>> Job to find the Minters metrics : " + spark);
