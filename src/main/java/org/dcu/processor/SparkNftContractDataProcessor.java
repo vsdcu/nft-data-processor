@@ -13,11 +13,16 @@ import static org.dcu.database.MoralisConnectionManager.TABLE_NFT_TRANSFERS;
 
 public class SparkNftContractDataProcessor {
 
+    private static final String WRKR_EXECUTOR_MEMORY = "4g";
+
     public static void main(String[] args) {
 
         SparkConf conf = new SparkConf()
                 .setAppName("Copy and Parse NftContract to DCU_Spark schema")
-                .set("spark.app.id", "spark-nft-contract-parse");
+                .set("spark.app.id", "spark-nft-contract-parse")
+                .set("spark.executor.memory", args[0]);
+
+        System.out.println("*********** Using spark.executor.memory:"+args[0]);
 
         SparkSession sparkSession = SparkSession.builder().config(conf).getOrCreate();
 

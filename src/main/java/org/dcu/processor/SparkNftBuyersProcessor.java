@@ -26,7 +26,10 @@ public class SparkNftBuyersProcessor {
 
         SparkConf conf = new SparkConf()
                 .setAppName("Copy and Parse NftContract to DCU_Spark schema")
-                .set("spark.app.id", "spark-nft-contract-parse");
+                .set("spark.app.id", "spark-nft-contract-parse")
+                .set("spark.executor.memory", args[0]);
+
+        System.out.println("*********** Using spark.executor.memory:"+args[0]);
 
         SparkSession sparkSession = SparkSession.builder().config(conf).getOrCreate();
 
@@ -36,7 +39,7 @@ public class SparkNftBuyersProcessor {
                 .select("to_address", "value");
 
 
-        originTransfersDataset.show();
+        //originTransfersDataset.show();
 
         Dataset<Row> result = originTransfersDataset.groupBy("to_address")
                 .agg(sum(col("value")).alias("total"))
@@ -45,7 +48,7 @@ public class SparkNftBuyersProcessor {
                 .withColumn("total_ether", col("total_value").divide(Math.pow(10, 18)));
 
 
-        result.show();
+        //result.show();
 
         DcuSparkConnectionManager dcuSparkConnectionManager = new DcuSparkConnectionManager();
         result.write()

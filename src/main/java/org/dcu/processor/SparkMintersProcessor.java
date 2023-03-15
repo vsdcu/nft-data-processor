@@ -12,7 +12,10 @@ public class SparkMintersProcessor {
         //spark configuration
         SparkConf conf = new SparkConf()
                 .setAppName("Minters-Processor-Job")
-                .set("spark.app.id", "spark-minters-processor");
+                .set("spark.app.id", "spark-minters-processor")
+                .set("spark.executor.memory", args[0]);
+
+        System.out.println("*********** Using spark.executor.memory:"+args[0]);
 
         SparkSession spark = SparkSession.builder().config(conf).getOrCreate();
         System.out.println(">>>> Job to find the Minters metrics : " + spark);

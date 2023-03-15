@@ -19,6 +19,8 @@ public class NFTValueProposition {
     public static final DcuSparkConnectionManager DCU_SPARK_CONNECTION_MANAGER = new DcuSparkConnectionManager();
     private static String tableName = TABLE_NFT_TRANSFERS;
 
+    private static int num_partitions = 24;
+
     public static void findNFTsValueProposition(SparkSession spark) {
 
         // read from GCP MySQL database, filter and then persist back in new table
@@ -36,11 +38,13 @@ public class NFTValueProposition {
 
 
         Dataset<Row> firstTransfer = df
+                .repartition(num_partitions)
                 .groupBy(col("nft_address"), col("token_id"))
                 .agg(min(col("block_timestamp")).as("first_timestamp"),
                         first(col("value")).cast(new DecimalType(38,0)).as("first_transfer"));
 
         Dataset<Row> lastTransfer = df
+                .repartition(num_partitions)
                 .groupBy(col("nft_address"), col("token_id"))
                 .agg(max(col("block_timestamp")).as("last_timestamp"),
                         last(col("value")).cast(new DecimalType(38,0)).as("last_transfer"));

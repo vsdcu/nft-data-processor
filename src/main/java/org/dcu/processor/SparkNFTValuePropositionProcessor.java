@@ -12,7 +12,10 @@ public class SparkNFTValuePropositionProcessor {
         //spark configuration
         SparkConf conf = new SparkConf()
                 .setAppName("NFT-Value-Proposition-Job")
-                .set("spark.app.id", "spark-nft-value-prop-processor");
+                .set("spark.app.id", "spark-nft-value-prop-processor")
+                .set("spark.executor.memory", args[0]);
+
+        System.out.println("*********** Using spark.executor.memory:"+args[0]);
 
         SparkSession spark = SparkSession.builder().config(conf).getOrCreate();
         System.out.println(">>>> Job to find the value propositions for the NFTs : " + spark);

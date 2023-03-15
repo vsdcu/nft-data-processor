@@ -29,6 +29,48 @@ public class CollectionTrades {
 
     private static String tableName = TABLE_NFT_TRANSFERS;
 
+    private static int num_partitions = 24;
+
+    public static void findTrends(SparkSession spark) {
+
+        System.out.println(">>>> .....Loading data in dataframe from table: " + tableName);
+
+        //load data in dataframe
+        Dataset<Row> rowDataset = spark.read().jdbc(MORALIS_CONNECTION_MANAGER.getUrl(), tableName, MORALIS_CONNECTION_MANAGER.getProps())
+                .select("nft_address", "token_id");
+
+/*        //group_by collection
+        Dataset<Row> collections_df = rowDataset.select("nft_address")
+                .repartition(num_partitions)
+                .groupBy(col("nft_address"))
+                .count().orderBy(desc("count"));
+
+        //dumping the processed data into spark-db
+        collections_df.write()
+                .mode(SaveMode.Overwrite)
+                .jdbc(DCU_SPARK_CONNECTION_MANAGER.getUrl(), "trades_by_collection", DCU_SPARK_CONNECTION_MANAGER.getProps());
+
+        System.out.println(" --------------- Data persisted into trades_by_collection ----------------------- ");*/
+
+
+        // part-2
+
+        Dataset<Row> tokens_df = rowDataset
+                .select("nft_address", "token_id")
+                .repartition(num_partitions)
+                .groupBy(col("nft_address"), col("token_id"))
+                .count()
+                .orderBy(desc("count"));
+
+        tokens_df.write()
+                .mode(SaveMode.Overwrite)
+                .jdbc(DCU_SPARK_CONNECTION_MANAGER.getUrl(), "token_trades_by_collection", DCU_SPARK_CONNECTION_MANAGER.getProps());
+
+        System.out.println(" --------------- Data persisted into token_trades_by_collection ----------------------- ");
+    }
+
+
+
     public static void findTotalTradesByNFTCollection(SparkSession spark) {
 
         // read from GCP MySQL database, filter and then persist back in new table
@@ -46,7 +88,7 @@ public class CollectionTrades {
                 .jdbc(DCU_SPARK_CONNECTION_MANAGER.getUrl(), "trades_by_collection", DCU_SPARK_CONNECTION_MANAGER.getProps());
 
         //nft_transfers_df.show();
-        System.out.println(" --------------- Data persisted into trades_by_collection ----------------------- ");
+
     }
 
 

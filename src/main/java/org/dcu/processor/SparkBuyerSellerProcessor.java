@@ -11,7 +11,10 @@ public class SparkBuyerSellerProcessor {
         //spark configuration
         SparkConf conf = new SparkConf()
                 .setAppName("Buyers-Sellers-Processor-Job")
-                .set("spark.app.id", "spark-nft-buyer-seller");
+                .set("spark.app.id", "spark-nft-buyer-seller")
+                .set("spark.executor.memory", args[0]);
+
+        System.out.println("*********** Using spark.executor.memory:"+args[0]);
 
         SparkSession spark = SparkSession.builder().config(conf).getOrCreate();
         System.out.println(">>>> Job to find the top buyers and sellers metrics : " + spark);
