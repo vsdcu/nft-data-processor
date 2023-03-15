@@ -22,6 +22,9 @@ public class MoralisConnectionManager {
         // define JDBC connection properties
 
         props.setProperty("driver", driverClass);
+        props.setProperty("connectTimeout", "30000");
+        props.setProperty("socketTimeout", "300000");
+
         props.setProperty("user", "root");
         props.setProperty("password", "!!DCU_Cloud_SYS_2023!!");
     }

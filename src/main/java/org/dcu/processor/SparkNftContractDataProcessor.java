@@ -43,7 +43,17 @@ public class SparkNftContractDataProcessor {
                 .set("spark.sql.shuffle.partitions", partitions)
                 .set("spark.driver.maxResultSize", maxResultSize)
                 .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
-                .set("spark.kryo.registrationRequired", "false");
+                .set("spark.kryo.registrationRequired", "false")
+
+
+                // Configure GC algorithm
+                .set("spark.executor.extraJavaOptions", "-XX:+UseG1GC")
+                .set("spark.driver.extraJavaOptions", "-XX:+UseG1GC")
+
+                // Tune GC settings
+                .set("spark.executor.extraJavaOptions", "-XX:NewRatio=3 -XX:MaxTenuringThreshold=15 -XX:SurvivorRatio=8")
+                .set("spark.driver.extraJavaOptions", "-XX:NewRatio=3 -XX:MaxTenuringThreshold=15 -XX:SurvivorRatio=8");
+
 
         System.out.println("*********** Using optimization params as ************");
         System.out.println("spark.executor.memory: " + memory);
@@ -52,10 +62,13 @@ public class SparkNftContractDataProcessor {
 
         SparkSession sparkSession = SparkSession.builder().config(conf).getOrCreate();
 
+
         MoralisConnectionManager moralisConnectionManager = new MoralisConnectionManager();
+
         Dataset<Row> originNfttDataset = sparkSession.read().jdbc(moralisConnectionManager.getUrl(),
                 TABLE_NFT_CONTRACTS, moralisConnectionManager.getProps())
-                .select("nft_address", "token_address", "token_id", "json_data");
+                .select("nft_address", "json_data")
+                .repartition(100);
 
         //originNfttDataset.show();
 
