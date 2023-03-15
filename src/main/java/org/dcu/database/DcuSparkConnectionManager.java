@@ -4,6 +4,9 @@ import java.util.Properties;
 
 public class DcuSparkConnectionManager {
 
+
+    public  static final String TABLE_NFT_CONTRACT_ENTITY = "nft_contract_entity";
+
     private String driverClass = "com.mysql.cj.jdbc.Driver";
 
     private Properties props = new Properties();
