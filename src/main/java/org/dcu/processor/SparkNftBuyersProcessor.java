@@ -26,7 +26,7 @@ public class SparkNftBuyersProcessor {
 
         SparkConf conf = new SparkConf()
                 .setAppName("Copy and Parse NftContract to DCU_Spark schema")
-                .set("spark.app.id", "spark-nft-contract-parse");
+                .set("spark.app.id", SparkNftBuyersProcessor.class.getName());
 
         SparkSession sparkSession = SparkSession.builder().config(conf).getOrCreate();
 
@@ -53,6 +53,7 @@ public class SparkNftBuyersProcessor {
                 .option("createTableColumnTypes", "buyer_address varchar(255), total_value DOUBLE, total_ether DOUBLE")
                 .jdbc(dcuSparkConnectionManager.getUrl(), "total_transferred_by_buyers", dcuSparkConnectionManager.getProps());
 
+        sparkSession.stop();
     }
 }
 
