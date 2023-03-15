@@ -5,7 +5,7 @@ import java.util.Properties;
 public class MoralisConnectionManager {
 
     public static final String TABLE_NFT_CONTRACTS = "nft_contracts";
-    public static final String TABLE_NFT_OPEN_SEA_TRADES = "krys_nft_open_sea_trades";
+    public static final String TABLE_NFT_OPEN_SEA_TRADES = "nft_open_sea_trades";
 
     public static final String TABLE_NFT_TRANSFERS = "nft_transfers";
 
@@ -13,7 +13,10 @@ public class MoralisConnectionManager {
 
     private Properties props = new Properties();
 
-    private String url = "jdbc:mysql://35.193.69.26:3306/moralis";
+    private String PUBLIC_JDBC_URL = "jdbc:mysql://35.193.69.26:3306/moralis";
+
+    private String PRIVATE_JDBC_URL = "jdbc:mysql://10.27.64.3:3306/moralis";
+
 
     public MoralisConnectionManager() {
         // define JDBC connection properties
@@ -24,7 +27,7 @@ public class MoralisConnectionManager {
     }
 
     public String getUrl() {
-        return url;
+        return PRIVATE_JDBC_URL;
     }
 
     public Properties getProps() {

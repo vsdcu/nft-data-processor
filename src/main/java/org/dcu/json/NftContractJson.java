@@ -1,11 +1,12 @@
 package org.dcu.json;
 
 import com.google.gson.annotations.SerializedName;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
+@Builder(access = AccessLevel.PUBLIC)
 public class NftContractJson {
 
     private String nftAddress;
