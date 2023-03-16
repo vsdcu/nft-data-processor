@@ -4,10 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.function.MapFunction;
-import org.apache.spark.sql.*;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Encoders;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
 import org.dcu.database.DcuSparkConnectionManager;
 import org.dcu.database.MoralisConnectionManager;
 import org.dcu.json.NftContractJson;
@@ -18,15 +20,15 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.util.Properties;
 
+import static org.apache.spark.sql.functions.col;
 import static org.dcu.database.MoralisConnectionManager.TABLE_NFT_CONTRACTS;
 
 public class SparkNftContractDataProcessor {
 
-    private static String INSERT_QUERY = "INSERT INTO mrc_nft_contract_entity (nftAddress, tokenAddress, tokenId, amount, tokenHash, blockNumberMinted, updatedAt, contractType, name, symbol, tokenUri, lastTokenUriSync, lastMetadataSync, minterAddress) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+    private static String INSERT_QUERY = "INSERT INTO nft_contract_entity (nftAddress, tokenAddress, tokenId, amount, tokenHash, blockNumberMinted, updatedAt, contractType, name, symbol, tokenUri, lastTokenUriSync, lastMetadataSync, minterAddress) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
-    private static int INSERT_BATCH_SIZE = 10000;
+    private static int INSERT_BATCH_SIZE = 5000;
 
-    private static final String WRKR_EXECUTOR_MEMORY = "4g";
 
     private static Gson gson = new Gson();
     private static ObjectMapper mapper = new ObjectMapper();
@@ -56,14 +58,15 @@ public class SparkNftContractDataProcessor {
                 .set("spark.driver.maxResultSize", maxResultSize)
                 .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
                 .set("spark.kryo.registrationRequired", "false")
+                .set("spark.executor.cores", "1");
 
-                // Configure GC algorithm
-                .set("spark.executor.extraJavaOptions", "-XX:+UseG1GC")
-                .set("spark.driver.extraJavaOptions", "-XX:+UseG1GC")
-
-                // Tune GC settings
-                .set("spark.executor.extraJavaOptions", "-XX:NewRatio=3 -XX:MaxTenuringThreshold=15 -XX:SurvivorRatio=8")
-                .set("spark.driver.extraJavaOptions", "-XX:NewRatio=3 -XX:MaxTenuringThreshold=15 -XX:SurvivorRatio=8");
+//                // Configure GC algorithm
+//                .set("spark.executor.extraJavaOptions", "-XX:+UseG1GC")
+//                .set("spark.driver.extraJavaOptions", "-XX:+UseG1GC")
+//
+//                // Tune GC settings
+//                .set("spark.executor.extraJavaOptions", "-XX:NewRatio=3 -XX:MaxTenuringThreshold=15 -XX:SurvivorRatio=8")
+//                .set("spark.driver.extraJavaOptions", "-XX:NewRatio=3 -XX:MaxTenuringThreshold=15 -XX:SurvivorRatio=8");
 
 
         System.out.println("*********** Using optimization params as ************");
@@ -81,6 +84,7 @@ public class SparkNftContractDataProcessor {
                 .select("nft_address", "json_data")
                 .repartition(100);
 
+
         //originNfttDataset.show();
 
         Dataset<NftContractJson> nftEntityDataset = originNfttDataset.map(
@@ -88,7 +92,7 @@ public class SparkNftContractDataProcessor {
                     String nftAddress = row.getString(row.fieldIndex("nft_address"));
                     String json = row.getString(row.fieldIndex("json_data"));
 
-                    NftContractJson nftEntity = parseNftContractJsonWithJackson(json, nftAddress,  sparkSession.log());
+                    NftContractJson nftEntity = parseNftContractJsonWithJackson(json, nftAddress, sparkSession.log());
 
 
                     return nftEntity;
@@ -122,7 +126,7 @@ public class SparkNftContractDataProcessor {
 
             while (partition.hasNext()) {
                 NftContractJson nftEntity = partition.next();
-                if(nftEntity == null) {
+                if (nftEntity == null) {
                     continue;
                 }
 

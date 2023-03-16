@@ -4,7 +4,7 @@ import java.util.Properties;
 
 public class MoralisConnectionManager {
 
-    public static final String TABLE_NFT_CONTRACTS = "mtrc_nft_contracts";
+    public static final String TABLE_NFT_CONTRACTS = "nft_contracts";
     public static final String TABLE_NFT_OPEN_SEA_TRADES = "nft_open_sea_trades";
 
     //public static final String TABLE_NFT_TRANSFERS = "nft_transfers";
