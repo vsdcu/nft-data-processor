@@ -23,6 +23,9 @@ import static org.dcu.database.MoralisConnectionManager.TABLE_NFT_CONTRACTS;
 public class SparkNftContractDataProcessor {
 
     private static String INSERT_QUERY = "INSERT INTO mrc_nft_contract_entity (nftAddress, tokenAddress, tokenId, amount, tokenHash, blockNumberMinted, updatedAt, contractType, name, symbol, tokenUri, lastTokenUriSync, lastMetadataSync, minterAddress) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+
+    private static int INSERT_BATCH_SIZE = 10000;
+
     private static final String WRKR_EXECUTOR_MEMORY = "4g";
 
     private static Gson gson = new Gson();
@@ -101,6 +104,8 @@ public class SparkNftContractDataProcessor {
 
         // New code for batch insert
         writeToDatabase(nftEntityDataset, dcuSparkConnectionManager);
+
+        sparkSession.stop();
     }
 
     public static void writeToDatabase(Dataset<NftContractJson> nftEntityDataset, DcuSparkConnectionManager dcuSparkConnectionManager) {
@@ -112,7 +117,7 @@ public class SparkNftContractDataProcessor {
 
             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_QUERY);
 
-            int batchSize = 1000;
+
             int currentBatchSize = 0;
 
             while (partition.hasNext()) {
@@ -140,7 +145,7 @@ public class SparkNftContractDataProcessor {
                 preparedStatement.addBatch();
                 currentBatchSize++;
 
-                if (currentBatchSize >= batchSize) {
+                if (currentBatchSize >= INSERT_BATCH_SIZE) {
                     preparedStatement.executeBatch();
                     connection.commit();
                     currentBatchSize = 0;
@@ -155,14 +160,6 @@ public class SparkNftContractDataProcessor {
             preparedStatement.close();
             connection.close();
         });
-
-
-    }
-
-    private static NftContractJson parseNftContractJsonWithGson(String jsonString, String nftAddress) {
-        NftContractJson nftEntity = gson.fromJson(jsonString, NftContractJson.class);
-        nftEntity.setNftAddress(nftAddress);
-        return nftEntity;
     }
 
 
