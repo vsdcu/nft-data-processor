@@ -4,16 +4,25 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.sql.*;
+import org.dcu.database.DcuSparkConnectionManager;
 import org.dcu.database.MoralisConnectionManager;
 import org.dcu.json.NftContractJson;
+import org.slf4j.Logger;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.util.Properties;
 
 import static org.dcu.database.MoralisConnectionManager.TABLE_NFT_CONTRACTS;
 
 public class SparkNftContractDataProcessor {
 
+    private static String INSERT_QUERY = "INSERT INTO mrc_nft_contract_entity (nftAddress, tokenAddress, tokenId, amount, tokenHash, blockNumberMinted, updatedAt, contractType, name, symbol, tokenUri, lastTokenUriSync, lastMetadataSync, minterAddress) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
     private static final String WRKR_EXECUTOR_MEMORY = "4g";
 
     private static Gson gson = new Gson();
@@ -30,7 +39,7 @@ public class SparkNftContractDataProcessor {
             partitions = args[1];
             maxResultSize = args[2];
         } else {
-            memory = "1g";
+            memory = "512m";
             partitions = "1073741824";
             maxResultSize = "512m";
         }
@@ -44,7 +53,6 @@ public class SparkNftContractDataProcessor {
                 .set("spark.driver.maxResultSize", maxResultSize)
                 .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
                 .set("spark.kryo.registrationRequired", "false")
-
 
                 // Configure GC algorithm
                 .set("spark.executor.extraJavaOptions", "-XX:+UseG1GC")
@@ -72,13 +80,12 @@ public class SparkNftContractDataProcessor {
 
         //originNfttDataset.show();
 
-
         Dataset<NftContractJson> nftEntityDataset = originNfttDataset.map(
                 (MapFunction<Row, NftContractJson>) row -> {
                     String nftAddress = row.getString(row.fieldIndex("nft_address"));
                     String json = row.getString(row.fieldIndex("json_data"));
 
-                    NftContractJson nftEntity = parseNftContractJsonWithJackson(json, nftAddress);
+                    NftContractJson nftEntity = parseNftContractJsonWithJackson(json, nftAddress,  sparkSession.log());
 
 
                     return nftEntity;
@@ -89,14 +96,67 @@ public class SparkNftContractDataProcessor {
 
         //nftEntityDataset.show();
 
-        MoralisConnectionManager dcuSparkConnectionManager = new MoralisConnectionManager();
-        nftEntityDataset.write()
-                .mode(SaveMode.Overwrite)
-                .jdbc(dcuSparkConnectionManager.getUrl(),
-                        "nft_contract_entity",
-                        dcuSparkConnectionManager.getProps());
 
-        sparkSession.stop();
+        DcuSparkConnectionManager dcuSparkConnectionManager = new DcuSparkConnectionManager();
+
+        // New code for batch insert
+        writeToDatabase(nftEntityDataset, dcuSparkConnectionManager);
+    }
+
+    public static void writeToDatabase(Dataset<NftContractJson> nftEntityDataset, DcuSparkConnectionManager dcuSparkConnectionManager) {
+        String url = dcuSparkConnectionManager.getUrl();
+        Properties props = dcuSparkConnectionManager.getProps();
+        nftEntityDataset.foreachPartition(partition -> {
+            Connection connection = DriverManager.getConnection(url, props);
+            connection.setAutoCommit(false);
+
+            PreparedStatement preparedStatement = connection.prepareStatement(INSERT_QUERY);
+
+            int batchSize = 1000;
+            int currentBatchSize = 0;
+
+            while (partition.hasNext()) {
+                NftContractJson nftEntity = partition.next();
+                if(nftEntity == null) {
+                    continue;
+                }
+
+                preparedStatement.setObject(1, nftEntity.getNftAddress());
+                preparedStatement.setObject(2, nftEntity.getTokenAddress());
+                preparedStatement.setObject(3, nftEntity.getTokenId());
+                preparedStatement.setObject(4, nftEntity.getAmount());
+                preparedStatement.setObject(5, nftEntity.getTokenHash());
+                preparedStatement.setObject(6, nftEntity.getBlockNumberMinted());
+                preparedStatement.setObject(7, nftEntity.getUpdatedAt());
+                preparedStatement.setObject(8, nftEntity.getContractType());
+                preparedStatement.setObject(9, nftEntity.getName());
+                preparedStatement.setObject(10, nftEntity.getSymbol());
+                preparedStatement.setObject(11, nftEntity.getTokenUri());
+                preparedStatement.setObject(12, nftEntity.getLastTokenUriSync());
+                preparedStatement.setObject(13, nftEntity.getLastMetadataSync());
+                preparedStatement.setObject(14, nftEntity.getMinterAddress());
+
+
+                preparedStatement.addBatch();
+                currentBatchSize++;
+
+                if (currentBatchSize >= batchSize) {
+                    preparedStatement.executeBatch();
+                    connection.commit();
+                    currentBatchSize = 0;
+                }
+            }
+
+            if (currentBatchSize > 0) {
+                preparedStatement.executeBatch();
+                connection.commit();
+            }
+
+            preparedStatement.close();
+            connection.close();
+        });
+
+
     }
 
     private static NftContractJson parseNftContractJsonWithGson(String jsonString, String nftAddress) {
@@ -106,24 +166,29 @@ public class SparkNftContractDataProcessor {
     }
 
 
-    private static NftContractJson parseNftContractJsonWithJackson(String jsonString, String nftAddress) throws JsonProcessingException {
+    private static NftContractJson parseNftContractJsonWithJackson(String jsonString, String nftAddress, Logger log) throws JsonProcessingException {
 
-        JsonNode rootNode = mapper.readTree(jsonString);
+        try {
+            JsonNode rootNode = mapper.readTree(jsonString);
 
-        return NftContractJson.builder()
-                .nftAddress(nftAddress)
-                .tokenHash(rootNode.get("token_hash").asText())
-                .tokenAddress(rootNode.get("token_address").asText())
-                .tokenId(rootNode.get("token_id").asText())
-                .amount(rootNode.get("amount").asText())
-                .blockNumberMinted(rootNode.get("block_number_minted").asText())
-                .contractType(rootNode.get("contract_type").asText())
-                .name(rootNode.get("name").asText())
-                .symbol(rootNode.get("symbol").asText())
-                .tokenUri(rootNode.get("token_uri").asText())
-                .lastTokenUriSync(rootNode.get("last_token_uri_sync").asText())
-                .lastMetadataSync(rootNode.get("last_metadata_sync").asText())
-                .minterAddress(rootNode.get("minter_address").asText()).build();
+            return NftContractJson.builder()
+                    .nftAddress(nftAddress)
+                    .tokenHash(rootNode.get("token_hash").asText())
+                    .tokenAddress(rootNode.get("token_address").asText())
+                    .tokenId(rootNode.get("token_id").asText())
+                    .amount(rootNode.get("amount").asText())
+                    .blockNumberMinted(rootNode.get("block_number_minted").asText())
+                    .contractType(rootNode.get("contract_type").asText())
+                    .name(rootNode.get("name").asText())
+                    .symbol(rootNode.get("symbol").asText())
+                    .tokenUri(rootNode.get("token_uri").asText())
+                    .lastTokenUriSync(rootNode.get("last_token_uri_sync").asText())
+                    .lastMetadataSync(rootNode.get("last_metadata_sync").asText())
+                    .minterAddress(rootNode.get("minter_address").asText()).build();
+        } catch (Exception e) {
+            log.error("Invalid JSON Format. {}", jsonString);
+            return null;
+        }
     }
 }
 
