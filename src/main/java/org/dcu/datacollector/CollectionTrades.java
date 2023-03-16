@@ -29,8 +29,6 @@ public class CollectionTrades {
 
     private static String tableName = TABLE_NFT_TRANSFERS;
 
-    private static int num_partitions = 24;
-
     public static void findTrends(SparkSession spark) {
 
         System.out.println(">>>> .....Loading data in dataframe from table: " + tableName);
@@ -38,6 +36,8 @@ public class CollectionTrades {
         //load data in dataframe
         Dataset<Row> rowDataset = spark.read().jdbc(MORALIS_CONNECTION_MANAGER.getUrl(), tableName, MORALIS_CONNECTION_MANAGER.getProps())
                 .select("nft_address", "token_id");
+
+        System.out.println(">>>> .....Loading data completed: ");
 
 /*        //group_by collection
         Dataset<Row> collections_df = rowDataset.select("nft_address")
@@ -57,10 +57,11 @@ public class CollectionTrades {
 
         Dataset<Row> tokens_df = rowDataset
                 .select("nft_address", "token_id")
-                .repartition(num_partitions)
+                .repartition()
                 .groupBy(col("nft_address"), col("token_id"))
-                .count()
-                .orderBy(desc("count"));
+                .count();
+
+        System.out.println(">>>> .....Processing of data completed: ");
 
         tokens_df.write()
                 .mode(SaveMode.Overwrite)
