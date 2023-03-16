@@ -11,8 +11,8 @@ public class DcuSparkConnectionManager {
 
     private Properties props = new Properties();
 
-    //private String url = "jdbc:mysql://35.193.69.26:3306/dcu_spark";
-    private String url = "jdbc:mysql://35.197.248.253:3306/dcu_spark";
+    private String url = "jdbc:mysql://35.193.69.26:3306/dcu_spark";  //us-db
+    //private String url = "jdbc:mysql://35.197.248.253:3306/dcu_spark"; //eu-db
 
     public DcuSparkConnectionManager() {
         // define JDBC connection properties
