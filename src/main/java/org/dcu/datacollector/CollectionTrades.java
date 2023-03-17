@@ -30,7 +30,11 @@ public class CollectionTrades {
     public static final MoralisConnectionManager MORALIS_CONNECTION_MANAGER = new MoralisConnectionManager();
     public static final DcuSparkConnectionManager DCU_SPARK_CONNECTION_MANAGER = new DcuSparkConnectionManager();
 
-    private static final String tableToReadData = MoralisConnectionManager.MRTC_NFT_TRANSFERS;
+    //private static final String tableToReadData = MoralisConnectionManager.MRTC_NFT_TRANSFERS;
+
+    private static final String tableToReadData = MoralisConnectionManager.TABLE_NFT_TRANSFERS;
+
+    public static final int NUM_PARTITIONS = 32028;
 
     public static void findTrends(SparkSession spark) {
 
@@ -109,7 +113,7 @@ public class CollectionTrades {
     private static void insertDataInBatches2(Dataset<Row> myDataset) {
         myDataset.explain();
 
-        myDataset.repartitionByRange(300, col("row_num")).foreachPartition(rows -> {
+        myDataset.repartitionByRange(NUM_PARTITIONS, col("row_num")).foreachPartition(rows -> {
             Connection conn = DriverManager.getConnection(DCU_SPARK_CONNECTION_MANAGER.getUrl(), DCU_SPARK_CONNECTION_MANAGER.getProps());
             //conn.setAutoCommit(false);
             PreparedStatement pstmt = conn.prepareStatement("INSERT INTO mrtc_token_trades_by_collection (nft_address, token_id, count) VALUES (?, ?, ?)");
