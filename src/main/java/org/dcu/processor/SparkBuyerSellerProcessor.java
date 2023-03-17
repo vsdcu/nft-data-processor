@@ -11,7 +11,16 @@ public class SparkBuyerSellerProcessor {
         //spark configuration
         SparkConf conf = new SparkConf()
                 .setAppName("Buyers-Sellers-Processor-Job")
-                .set("spark.app.id", "spark-nft-buyer-seller");
+                .set("spark.app.id", "spark-nft-buyer-seller")
+//                .set("spark.shuffle.service.enabled", "true")
+//                .set("spark.dynamicAllocation.enabled", "true")
+                .set("spark.executor.instances", "4")
+                .set("spark.executor.cores", "4")
+                .set("spark.executor.memory", "4g")
+                .set("spark.default.parallelism", "32028")
+                .set("spark.sql.shuffle.partitions", "32028");
+
+
 //                .set("spark.executor.memory", args[0])
 //                .set("spark.sql.shuffle.partitions", args[1])
 //                .set("spark.driver.maxResultSize", args[2]);
@@ -25,10 +34,12 @@ public class SparkBuyerSellerProcessor {
         System.out.println(">>>> Job to find the top buyers and sellers metrics : " + spark);
 
         //find top buyers
-        TopTraders.findTopBuyers(spark);
+        //TopTraders.findTopBuyers(spark);
 
         //find top sellers
-        TopTraders.findTopSellers(spark);
+        //TopTraders.findTopSellers(spark);
+
+        TopTraders.findTopBuyersSellers(spark);
 
         spark.stop();
 

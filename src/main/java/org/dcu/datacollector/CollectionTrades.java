@@ -7,9 +7,12 @@ import org.apache.spark.sql.SparkSession;
 import org.dcu.database.DcuSparkConnectionManager;
 import org.dcu.database.MoralisConnectionManager;
 
-import static org.apache.spark.sql.functions.col;
-import static org.apache.spark.sql.functions.desc;
-import static org.dcu.database.MoralisConnectionManager.TABLE_NFT_TRANSFERS;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.util.Arrays;
+
+import static org.apache.spark.sql.functions.*;
 
 
 /**
@@ -27,47 +30,106 @@ public class CollectionTrades {
     public static final MoralisConnectionManager MORALIS_CONNECTION_MANAGER = new MoralisConnectionManager();
     public static final DcuSparkConnectionManager DCU_SPARK_CONNECTION_MANAGER = new DcuSparkConnectionManager();
 
-    private static String tableName = TABLE_NFT_TRANSFERS;
+    //private static final String tableToReadData = MoralisConnectionManager.MRTC_NFT_TRANSFERS;
+
+    private static final String tableToReadData = MoralisConnectionManager.TABLE_NFT_TRANSFERS;
+
+    public static final int NUM_PARTITIONS = 32028;
 
     public static void findTrends(SparkSession spark) {
 
-        System.out.println(">>>> .....Loading data in dataframe from table: " + tableName);
+        System.out.println(">>>> .....Loading data in dataframe from table: " + tableToReadData);
 
         //load data in dataframe
-        Dataset<Row> rowDataset = spark.read().jdbc(MORALIS_CONNECTION_MANAGER.getUrl(), tableName, MORALIS_CONNECTION_MANAGER.getProps())
+        Dataset<Row> rowDataset = spark.read().jdbc(MORALIS_CONNECTION_MANAGER.getUrl(), tableToReadData, MORALIS_CONNECTION_MANAGER.getProps())
                 .select("nft_address", "token_id");
 
+        rowDataset.printSchema();
+        rowDataset.cache();
         System.out.println(">>>> .....Loading data completed: ");
 
-/*        //group_by collection
-        Dataset<Row> collections_df = rowDataset.select("nft_address")
-                .repartition(num_partitions)
+        //group_by collection
+        Dataset<Row> collections_df = rowDataset.select(col("nft_address"))
                 .groupBy(col("nft_address"))
-                .count().orderBy(desc("count"));
+                .count();
+
+        collections_df.show(50);
+        collections_df.printSchema();
 
         //dumping the processed data into spark-db
-        collections_df.write()
-                .mode(SaveMode.Overwrite)
-                .jdbc(DCU_SPARK_CONNECTION_MANAGER.getUrl(), "trades_by_collection", DCU_SPARK_CONNECTION_MANAGER.getProps());
+        insertDataInBatches1(collections_df);
 
-        System.out.println(" --------------- Data persisted into trades_by_collection ----------------------- ");*/
+
+/*        collections_df.write()
+                .mode(SaveMode.Overwrite)
+                .jdbc(DCU_SPARK_CONNECTION_MANAGER.getUrl(), "mrtc_trades_by_collection", DCU_SPARK_CONNECTION_MANAGER.getProps());*/
+
+        System.out.println(" --------------- Data persisted into trades_by_collection ----------------------- ");
 
 
         // part-2
 
         Dataset<Row> tokens_df = rowDataset
                 .select("nft_address", "token_id")
-                .repartition()
                 .groupBy(col("nft_address"), col("token_id"))
                 .count();
 
-        System.out.println(">>>> .....Processing of data completed: ");
+        Dataset<Row> tokens_df_with_rowNum = tokens_df.withColumn("row_num", monotonically_increasing_id());
 
-        tokens_df.write()
+        tokens_df_with_rowNum.printSchema();
+        System.out.println(">>>> .....Processing of data completed: ");
+        tokens_df_with_rowNum.show(50);
+
+        insertDataInBatches2(tokens_df_with_rowNum);
+
+/*        tokens_df.write()
                 .mode(SaveMode.Overwrite)
-                .jdbc(DCU_SPARK_CONNECTION_MANAGER.getUrl(), "token_trades_by_collection", DCU_SPARK_CONNECTION_MANAGER.getProps());
+                .jdbc(DCU_SPARK_CONNECTION_MANAGER.getUrl(), "mrtc_token_trades_by_collection", DCU_SPARK_CONNECTION_MANAGER.getProps());*/
 
         System.out.println(" --------------- Data persisted into token_trades_by_collection ----------------------- ");
+    }
+
+
+    private static void insertDataInBatches1(Dataset<Row> myDataset) {
+        myDataset.foreachPartition(rows -> {
+            Connection conn = DriverManager.getConnection(DCU_SPARK_CONNECTION_MANAGER.getUrl(), DCU_SPARK_CONNECTION_MANAGER.getProps());
+            //conn.setAutoCommit(false);
+            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO mrtc_trades_by_collection (nft_address, count) VALUES (?, ?)");
+            while (rows.hasNext()) {
+                Row row = rows.next();
+                pstmt.setString(1, row.getString(0));
+                pstmt.setLong(2, row.getLong(1));
+                pstmt.addBatch();
+            }
+            long[] rowsInserted = pstmt.executeLargeBatch();
+            //conn.commit();
+            System.out.println("\n\n******* trades_by_collection Rows affected: " + Arrays.toString(rowsInserted));
+            pstmt.close();
+            conn.close();
+        });
+    }
+
+
+    private static void insertDataInBatches2(Dataset<Row> myDataset) {
+        myDataset.explain();
+
+        myDataset.repartitionByRange(NUM_PARTITIONS, col("row_num")).foreachPartition(rows -> {
+            Connection conn = DriverManager.getConnection(DCU_SPARK_CONNECTION_MANAGER.getUrl(), DCU_SPARK_CONNECTION_MANAGER.getProps());
+            //conn.setAutoCommit(false);
+            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO mrtc_token_trades_by_collection (nft_address, token_id, count) VALUES (?, ?, ?)");
+            while (rows.hasNext()) {
+                Row row = rows.next();
+                pstmt.setString(1, row.getString(0));
+                pstmt.setString(2, row.getString(1));
+                pstmt.setLong(3, row.getLong(2));
+                pstmt.addBatch();
+            }
+            long[] rowsInserted = pstmt.executeLargeBatch();
+            //conn.commit();
+            System.out.println("\n\n******* token_trades_by_collection Rows affected: " + Arrays.toString(rowsInserted));
+            pstmt.close();
+            conn.close();
+        });
     }
 
 
@@ -75,10 +137,10 @@ public class CollectionTrades {
     public static void findTotalTradesByNFTCollection(SparkSession spark) {
 
         // read from GCP MySQL database, filter and then persist back in new table
-        System.out.println(">>>> Finding MostTradedNFTCollection from table: " + tableName);
+        System.out.println(">>>> Finding MostTradedNFTCollection from table: " + tableToReadData);
 
         Dataset<Row> rowDataset = spark.read()
-                .jdbc(MORALIS_CONNECTION_MANAGER.getUrl(), tableName, MORALIS_CONNECTION_MANAGER.getProps())
+                .jdbc(MORALIS_CONNECTION_MANAGER.getUrl(), tableToReadData, MORALIS_CONNECTION_MANAGER.getProps())
                 .select("nft_address")
                 .groupBy(col("nft_address"))
                 .count()
@@ -101,9 +163,9 @@ public class CollectionTrades {
     public static void findTotalTradesByTokenIdInNFTCollection(SparkSession spark) {
 
         // read from GCP MySQL database, filter and then persist back in new table
-        System.out.println(">>>> Finding findTotalTradesByTokenIdInNFTCollection from table: " + tableName);
+        System.out.println(">>>> Finding findTotalTradesByTokenIdInNFTCollection from table: " + tableToReadData);
 
-        Dataset<Row> rowDataset = spark.read().jdbc(MORALIS_CONNECTION_MANAGER.getUrl(), tableName, MORALIS_CONNECTION_MANAGER.getProps())
+        Dataset<Row> rowDataset = spark.read().jdbc(MORALIS_CONNECTION_MANAGER.getUrl(), tableToReadData, MORALIS_CONNECTION_MANAGER.getProps())
                 .select("nft_address", "token_id")
                 .groupBy(col("nft_address"), col("token_id"))
                 .count()

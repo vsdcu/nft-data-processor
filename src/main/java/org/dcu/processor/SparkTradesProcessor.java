@@ -18,7 +18,13 @@ public class SparkTradesProcessor {
         //spark configuration
         SparkConf conf = new SparkConf()
                 .setAppName("Trade-Processor-Job")
-                .set("spark.app.id", "spark-trade-processor");
+                .set("spark.app.id", "spark-trade-processor")
+                .set("spark.executor.instances", "16")
+                .set("spark.executor.cores", "1")
+                .set("spark.executor.memory", "512m")
+                .set("spark.default.parallelism", "256")
+                .set("spark.sql.shuffle.partitions", "256");
+
 //                .set("spark.executor.instances", args[0])
 //                .set("spark.executor.memory", args[1])
 //                .set("spark.default.parallelism", args[2])
@@ -37,7 +43,7 @@ public class SparkTradesProcessor {
 
 
         SparkSession spark = SparkSession.builder().config(conf).getOrCreate();
-        System.out.println(">>>> Job to find the trades metrics : " + spark);
+        System.out.println(">>>> Job to find the trades metrics mrtc : " + spark);
 
         //find total trades for each collection
         //CollectionTrades.findTotalTradesByNFTCollection(spark);
