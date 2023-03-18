@@ -34,61 +34,43 @@ public class CollectionTrades {
 
     private static final String tableToReadData = MoralisConnectionManager.TABLE_NFT_TRANSFERS;
 
-    public static final int NUM_PARTITIONS = 32028;
+    public static final int NUM_PARTITIONS = 16014;
 
     public static void findTrends(SparkSession spark) {
-
-        System.out.println(">>>> .....Loading data in dataframe from table: " + tableToReadData);
-
+        System.out.println("Loading data in dataframe from table: " + tableToReadData);
         //load data in dataframe
         Dataset<Row> rowDataset = spark.read().jdbc(MORALIS_CONNECTION_MANAGER.getUrl(), tableToReadData, MORALIS_CONNECTION_MANAGER.getProps())
-                .select("nft_address", "token_id");
+                .select("nft_address", "token_id")
+                .withColumn("row_num", monotonically_increasing_id());;
 
-        rowDataset.printSchema();
-        rowDataset.cache();
-        System.out.println(">>>> .....Loading data completed: ");
+        rowDataset.repartitionByRange(NUM_PARTITIONS, col("row_num")).cache();
 
         //group_by collection
-        Dataset<Row> collections_df = rowDataset.select(col("nft_address"))
+        Dataset<Row> collections_df = rowDataset
+                .select(col("nft_address"))
                 .groupBy(col("nft_address"))
                 .count();
 
-        collections_df.show(50);
-        collections_df.printSchema();
-
         //dumping the processed data into spark-db
-        insertDataInBatches1(collections_df);
-
-
-/*        collections_df.write()
+        collections_df.cache();
+        collections_df.write()
                 .mode(SaveMode.Overwrite)
-                .jdbc(DCU_SPARK_CONNECTION_MANAGER.getUrl(), "mrtc_trades_by_collection", DCU_SPARK_CONNECTION_MANAGER.getProps());*/
+                .jdbc(DCU_SPARK_CONNECTION_MANAGER.getUrl(), "full_trades_by_collection", DCU_SPARK_CONNECTION_MANAGER.getProps());
 
         System.out.println(" --------------- Data persisted into trades_by_collection ----------------------- ");
 
-
         // part-2
-
         Dataset<Row> tokens_df = rowDataset
                 .select("nft_address", "token_id")
                 .groupBy(col("nft_address"), col("token_id"))
                 .count();
 
-        Dataset<Row> tokens_df_with_rowNum = tokens_df.withColumn("row_num", monotonically_increasing_id());
-
-        tokens_df_with_rowNum.printSchema();
-        System.out.println(">>>> .....Processing of data completed: ");
-        tokens_df_with_rowNum.show(50);
-
-        insertDataInBatches2(tokens_df_with_rowNum);
-
-/*        tokens_df.write()
+        tokens_df.write()
                 .mode(SaveMode.Overwrite)
-                .jdbc(DCU_SPARK_CONNECTION_MANAGER.getUrl(), "mrtc_token_trades_by_collection", DCU_SPARK_CONNECTION_MANAGER.getProps());*/
+                .jdbc(DCU_SPARK_CONNECTION_MANAGER.getUrl(), "full_token_trades_by_collection", DCU_SPARK_CONNECTION_MANAGER.getProps());
 
         System.out.println(" --------------- Data persisted into token_trades_by_collection ----------------------- ");
     }
-
 
     private static void insertDataInBatches1(Dataset<Row> myDataset) {
         myDataset.foreachPartition(rows -> {
@@ -132,13 +114,9 @@ public class CollectionTrades {
         });
     }
 
-
-
     public static void findTotalTradesByNFTCollection(SparkSession spark) {
 
         // read from GCP MySQL database, filter and then persist back in new table
-        System.out.println(">>>> Finding MostTradedNFTCollection from table: " + tableToReadData);
-
         Dataset<Row> rowDataset = spark.read()
                 .jdbc(MORALIS_CONNECTION_MANAGER.getUrl(), tableToReadData, MORALIS_CONNECTION_MANAGER.getProps())
                 .select("nft_address")
@@ -151,7 +129,6 @@ public class CollectionTrades {
                 .jdbc(DCU_SPARK_CONNECTION_MANAGER.getUrl(), "trades_by_collection", DCU_SPARK_CONNECTION_MANAGER.getProps());
 
         //nft_transfers_df.show();
-
     }
 
 
@@ -178,6 +155,5 @@ public class CollectionTrades {
         //nft_transfers_df.show();
         System.out.println(" --------------- Data persisted into token_trades_by_collection ----------------------- ");
     }
-
 
 }

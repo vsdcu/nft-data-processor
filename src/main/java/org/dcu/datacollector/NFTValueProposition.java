@@ -8,16 +8,12 @@ import org.apache.spark.sql.types.DecimalType;
 import org.dcu.database.DcuSparkConnectionManager;
 import org.dcu.database.MoralisConnectionManager;
 
-import java.util.Arrays;
-
 import static org.apache.spark.sql.functions.*;
 
 public class NFTValueProposition {
 
     public static final MoralisConnectionManager MORALIS_CONNECTION_MANAGER = new MoralisConnectionManager();
     public static final DcuSparkConnectionManager DCU_SPARK_CONNECTION_MANAGER = new DcuSparkConnectionManager();
-
-    //private static final String tableToReadData = MoralisConnectionManager.MRTC_NFT_TRANSFERS;
 
     private static final String tableToReadData = MoralisConnectionManager.TABLE_NFT_TRANSFERS;
 
@@ -30,15 +26,7 @@ public class NFTValueProposition {
         Dataset<Row> df = spark.read()
                 .jdbc(MORALIS_CONNECTION_MANAGER.getUrl(), tableToReadData, MORALIS_CONNECTION_MANAGER.getProps())
                 .withColumn("row_num", monotonically_increasing_id());
-
         //df.show();
-
-//        Dataset<Row> firstTransfer = df.groupBy("nft_address", "token_id")
-//                .agg(first("value").as("first_value"));
-//        Dataset<Row> lastTransfer = df.groupBy("nft_address", "token_id")
-//                .agg(last("value").as("last_value"));
-
-
 
 /*        Dataset<Row> firstTransfer = df
                 .repartition(num_partitions)
@@ -71,7 +59,7 @@ public class NFTValueProposition {
                 .jdbc(DCU_SPARK_CONNECTION_MANAGER.getUrl(), "full_nft_value_propositions", DCU_SPARK_CONNECTION_MANAGER.getProps());*/
 
 
-        // First, we create two datasets with the first and last transfers
+// First, create two datasets with the first and last transfers
         Dataset<Row> firstTransfer = df.repartitionByRange(num_partitions, col("row_num"))
                 .groupBy(col("nft_address"), col("token_id"))
                 .agg(min(col("block_timestamp")).as("first_timestamp"),
@@ -82,7 +70,7 @@ public class NFTValueProposition {
                 .agg(max(col("block_timestamp")).as("last_timestamp"),
                         last(col("value")).cast(new DecimalType(38, 0)).as("last_transfer"));
 
-// Then, we join the two datasets and calculate the difference
+// Then, join the two datasets and calculate the difference
         Dataset<Row> difference = firstTransfer
                 .join(lastTransfer, firstTransfer.col("nft_address").equalTo(lastTransfer.col("nft_address"))
                         .and(firstTransfer.col("token_id").equalTo(lastTransfer.col("token_id"))))
@@ -92,10 +80,10 @@ public class NFTValueProposition {
                         firstTransfer.col("first_transfer"),
                         lastTransfer.col("last_transfer"), col("difference"));
 
-// We cache the dataset to avoid expensive recomputation
+// cache the dataset to avoid expensive re-computation
         difference.cache();
 
-// Finally, we write the data to the database
+// Finally, dumping the data to the database
         difference
                 .repartition(num_partitions, col("nft_address"), col("token_id"))
                 .write()
