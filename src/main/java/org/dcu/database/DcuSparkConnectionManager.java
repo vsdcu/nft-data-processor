@@ -5,7 +5,7 @@ import java.util.Properties;
 public class DcuSparkConnectionManager {
 
 
-    public  static final String TABLE_NFT_CONTRACT_ENTITY = "nft_contract_entity";
+    public  static final String TABLE_NFT_CONTRACT_ENTITY = "mrc_parsed_nft_contract_data";
 
     private String driverClass = "com.mysql.cj.jdbc.Driver";
 
@@ -31,3 +31,5 @@ public class DcuSparkConnectionManager {
     }
 
 }
+//read_only
+//DCU_123!!!
