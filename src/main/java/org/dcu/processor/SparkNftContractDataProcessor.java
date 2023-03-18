@@ -3,7 +3,6 @@ package org.dcu.processor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.sql.Dataset;
@@ -20,7 +19,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.util.Properties;
 
-import static org.apache.spark.sql.functions.col;
 import static org.dcu.database.MoralisConnectionManager.TABLE_NFT_CONTRACTS;
 
 public class SparkNftContractDataProcessor {
@@ -29,63 +27,23 @@ public class SparkNftContractDataProcessor {
 
     private static int INSERT_BATCH_SIZE = 5000;
 
-
-    private static Gson gson = new Gson();
     private static ObjectMapper mapper = new ObjectMapper();
 
     public static void main(String[] args) {
-
-        String memory;
-        String partitions;
-        String maxResultSize;
-
-        if (args.length > 0) {
-            memory = args[0];
-            partitions = args[1];
-            maxResultSize = args[2];
-        } else {
-            memory = "512m";
-            partitions = "1073741824";
-            maxResultSize = "512m";
-        }
-
-
         SparkConf conf = new SparkConf()
                 .setAppName("Copy and Parse NftContract to DCU_Spark schema")
                 .set("spark.app.id", "spark-nft-contract-parse")
-                .set("spark.executor.memory", memory)
-                .set("spark.sql.shuffle.partitions", partitions)
-                .set("spark.driver.maxResultSize", maxResultSize)
                 .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
                 .set("spark.kryo.registrationRequired", "false")
                 .set("spark.executor.cores", "1");
 
-//                // Configure GC algorithm
-//                .set("spark.executor.extraJavaOptions", "-XX:+UseG1GC")
-//                .set("spark.driver.extraJavaOptions", "-XX:+UseG1GC")
-//
-//                // Tune GC settings
-//                .set("spark.executor.extraJavaOptions", "-XX:NewRatio=3 -XX:MaxTenuringThreshold=15 -XX:SurvivorRatio=8")
-//                .set("spark.driver.extraJavaOptions", "-XX:NewRatio=3 -XX:MaxTenuringThreshold=15 -XX:SurvivorRatio=8");
-
-
-        System.out.println("*********** Using optimization params as ************");
-        System.out.println("spark.executor.memory: " + memory);
-        System.out.println("spark.sql.shuffle.partitions: " + partitions);
-        System.out.println("spark.driver.maxResultSize: " + maxResultSize);
-
         SparkSession sparkSession = SparkSession.builder().config(conf).getOrCreate();
-
-
         MoralisConnectionManager moralisConnectionManager = new MoralisConnectionManager();
 
         Dataset<Row> originNfttDataset = sparkSession.read().jdbc(moralisConnectionManager.getUrl(),
                 TABLE_NFT_CONTRACTS, moralisConnectionManager.getProps())
                 .select("nft_address", "json_data")
                 .repartition(100);
-
-
-        //originNfttDataset.show();
 
         Dataset<NftContractJson> nftEntityDataset = originNfttDataset.map(
                 (MapFunction<Row, NftContractJson>) row -> {
@@ -100,12 +58,7 @@ public class SparkNftContractDataProcessor {
                 Encoders.bean(NftContractJson.class)
         );
 
-
-        //nftEntityDataset.show();
-
-
         DcuSparkConnectionManager dcuSparkConnectionManager = new DcuSparkConnectionManager();
-
         // New code for batch insert
         writeToDatabase(nftEntityDataset, dcuSparkConnectionManager);
 
@@ -120,7 +73,6 @@ public class SparkNftContractDataProcessor {
             connection.setAutoCommit(false);
 
             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_QUERY);
-
 
             int currentBatchSize = 0;
 
@@ -145,7 +97,6 @@ public class SparkNftContractDataProcessor {
                 preparedStatement.setObject(13, nftEntity.getLastMetadataSync());
                 preparedStatement.setObject(14, nftEntity.getMinterAddress());
 
-
                 preparedStatement.addBatch();
                 currentBatchSize++;
 
@@ -166,12 +117,9 @@ public class SparkNftContractDataProcessor {
         });
     }
 
-
     private static NftContractJson parseNftContractJsonWithJackson(String jsonString, String nftAddress, Logger log) throws JsonProcessingException {
-
         try {
             JsonNode rootNode = mapper.readTree(jsonString);
-
             return NftContractJson.builder()
                     .nftAddress(nftAddress)
                     .tokenHash(rootNode.get("token_hash").asText())
