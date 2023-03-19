@@ -25,20 +25,20 @@ public class TopTraders {
     public static final MoralisConnectionManager MORALIS_CONNECTION_MANAGER = new MoralisConnectionManager();
     public static final DcuSparkConnectionManager DCU_SPARK_CONNECTION_MANAGER = new DcuSparkConnectionManager();
 
-    //private static final String tableToReadData = MoralisConnectionManager.MRTC_NFT_TRANSFERS;
     private static final String tableToReadData = MoralisConnectionManager.TABLE_NFT_TRANSFERS;
 
     private static int num_partitions = 32028;
 
-
-
     public static void findTopBuyersSellers(SparkSession spark) {
+
+        System.out.println(">>>> Finding Top Buyers from table>>: " + tableToReadData);
+
         Dataset<Row> fullDataset = spark.read()
                 .jdbc(MORALIS_CONNECTION_MANAGER.getUrl(), tableToReadData, MORALIS_CONNECTION_MANAGER.getProps())
                 .select(col("to_address").as("buyer_address"), col("from_address").as("seller_address"));
 
+        // cache teh dataset
         fullDataset.cache();
-        System.out.println(">>>> Finding Top Buyers from table>>: " + tableToReadData);
 
         Dataset<Row> buyersDataset = fullDataset.groupBy(col("buyer_address"))
                 .count()

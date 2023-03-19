@@ -3,7 +3,6 @@ package org.dcu.processor;
 import org.apache.spark.SparkConf;
 import org.apache.spark.sql.SparkSession;
 import org.dcu.datacollector.CollectionMinters;
-import org.dcu.datacollector.CollectionTrades;
 
 public class SparkMintersProcessor {
 
@@ -13,19 +12,26 @@ public class SparkMintersProcessor {
         SparkConf conf = new SparkConf()
                 .setAppName("Minters-Processor-Job")
                 .set("spark.app.id", "spark-minters-processor")
-                .set("spark.executor.memory", args[0])
-                .set("spark.sql.shuffle.partitions", args[1])
-                .set("spark.driver.maxResultSize", args[2]);
+                .set("spark.executor.instances", "6")
+                .set("spark.executor.cores", "4")
+                .set("spark.executor.memory", "10g")
+                .set("spark.default.parallelism", "24")
+                .set("spark.sql.shuffle.partitions", "128")
+                .set("spark.driver.maxResultSize", "2g");
 
-        System.out.println("*********** Using optimization params as ************");
-        System.out.println("spark.executor.memory: "+args[0]);
-        System.out.println("spark.sql.shuffle.partitions: "+args[1]);
-        System.out.println("spark.driver.maxResultSize: "+args[2]);
+        //vsdcu: my mac setup
+/*              .set("spark.executor.instances", "4")
+                .set("spark.executor.cores", "4")
+                .set("spark.executor.memory", "6g")
+                .set("spark.default.parallelism", "24")
+                .set("spark.sql.shuffle.partitions", "128")
+                .set("spark.driver.maxResultSize", "1g");*/
 
+        
         SparkSession spark = SparkSession.builder().config(conf).getOrCreate();
         System.out.println(">>>> Job to find the Minters metrics : " + spark);
 
-        CollectionMinters.findTopMinters(spark);
+        CollectionMinters.findTopMintersAndTopMintedCollections(spark);
 
         spark.stop();
 
