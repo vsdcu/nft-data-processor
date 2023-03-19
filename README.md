@@ -23,9 +23,9 @@ mysql-connector-j-8.0.32.jar  - To connect to the MySQL database.
     
 Mac settings used to run on the standalone system (You need to tweak it as per your machine hardware)
 ----------------------------------------------------------------------------------------------------------
-("spark.executor.instances", "4")
-("spark.executor.cores", "4")
-("spark.executor.memory", "6g")
-("spark.default.parallelism", "24")
-("spark.sql.shuffle.partitions", "128")
-("spark.driver.maxResultSize", "1g");    
+- ("spark.executor.instances", "4")
+- ("spark.executor.cores", "4")
+- ("spark.executor.memory", "6g")
+- ("spark.default.parallelism", "24")
+- ("spark.sql.shuffle.partitions", "128")
+- ("spark.driver.maxResultSize", "1g");    
