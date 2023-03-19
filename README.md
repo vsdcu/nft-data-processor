@@ -4,6 +4,16 @@ Prerequisite
 --------------
 Install spark libs and have a standalone or cluster setup running spark master/workers
 
+command to build the project
+---------------------------------------
+This is a maven project that uses maven-wrapper, so make sure you have it all installed before building.
+./mvnw clean install
+
+deployment on spark cluster
+--------------------------------
+once the build is successful, you need to package your code in a app;lication.jar that can be run using the spark-submit. 
+For this application, you will find spark-data-processor-1.0-SNAPSHOT.jar in your target directory that needs to be shipped to cloud or local standalone spark machine to run the jobs.  
+
 command to run the code -
 -----------------------------------------
 ./bin/spark-submit --master spark://vinits-MBP:7077 --class <main-class> --jars <required-libs> <application-jar>
