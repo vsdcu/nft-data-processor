@@ -49,8 +49,8 @@ public class TopTraders {
 
         Dataset<Row> buyersDataset = fullDataset.groupBy(col("buyer_address"))
                 .count()
-                .orderBy(desc("count"))
-                .withColumn("buyer_name", randomNameUDF.apply(col("buyer_address")));
+                .withColumn("buyer_name", randomNameUDF.apply(col("buyer_address")))
+                .orderBy(desc("count"));
 
         buyersDataset
                 .write()
@@ -61,8 +61,8 @@ public class TopTraders {
 
         Dataset<Row> sellersDataset = fullDataset.groupBy(col("seller_address"))
                 .count()
-                .orderBy(desc("count"))
-                .withColumn("seller_name", randomNameUDF.apply(col("seller_address")));
+                .withColumn("seller_name", randomNameUDF.apply(col("seller_address")))
+                .orderBy(desc("count"));
 
         sellersDataset
                 .write()
