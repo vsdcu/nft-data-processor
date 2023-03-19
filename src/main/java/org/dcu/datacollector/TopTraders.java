@@ -4,10 +4,13 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.expressions.UserDefinedFunction;
+import org.apache.spark.sql.types.DataTypes;
 import org.dcu.database.DcuSparkConnectionManager;
 import org.dcu.database.MoralisConnectionManager;
 
 import static org.apache.spark.sql.functions.*;
+import static org.dcu.util.RandomNameGenerator.generateRandomBuyersSellersName;
 
 /**
  * This will persist output in two tables
@@ -27,25 +30,29 @@ public class TopTraders {
 
     private static final String tableToReadData = MoralisConnectionManager.TABLE_NFT_TRANSFERS;
 
-    private static int num_partitions = 32028;
+    private static int num_partitions = 256;
 
     public static void findTopBuyersSellers(SparkSession spark) {
 
         System.out.println(">>>> Finding Top Buyers from table>>: " + tableToReadData);
 
+        UserDefinedFunction randomNameUDF = udf((String s) -> generateRandomBuyersSellersName(), DataTypes.StringType);
+
         Dataset<Row> fullDataset = spark.read()
                 .jdbc(MORALIS_CONNECTION_MANAGER.getUrl(), tableToReadData, MORALIS_CONNECTION_MANAGER.getProps())
-                .select(col("to_address").as("buyer_address"), col("from_address").as("seller_address"));
+                .select(col("to_address").as("buyer_address"), col("from_address").as("seller_address"))
+                .withColumn("row_num", monotonically_increasing_id())
+                .repartitionByRange(num_partitions, col("row_num"));
 
         // cache teh dataset
         fullDataset.cache();
 
         Dataset<Row> buyersDataset = fullDataset.groupBy(col("buyer_address"))
                 .count()
-                .orderBy(desc("count"));
+                .orderBy(desc("count"))
+                .withColumn("buyer_name", randomNameUDF.apply(col("buyer_address")));
 
-        buyersDataset.withColumn("row_num", monotonically_increasing_id())
-                .repartitionByRange(num_partitions, col("row_num"))
+        buyersDataset
                 .write()
                 .mode(SaveMode.Overwrite)
                 .jdbc(DCU_SPARK_CONNECTION_MANAGER.getUrl(), "full_buyers_trades_count", DCU_SPARK_CONNECTION_MANAGER.getProps());
@@ -54,15 +61,15 @@ public class TopTraders {
 
         Dataset<Row> sellersDataset = fullDataset.groupBy(col("seller_address"))
                 .count()
-                .orderBy(desc("count"));
+                .orderBy(desc("count"))
+                .withColumn("seller_name", randomNameUDF.apply(col("seller_address")));
 
-        sellersDataset.withColumn("row_num", monotonically_increasing_id())
-                .repartitionByRange(num_partitions, col("row_num"))
+        sellersDataset
                 .write()
                 .mode(SaveMode.Overwrite)
                 .jdbc(DCU_SPARK_CONNECTION_MANAGER.getUrl(), "full_sellers_trades_count", DCU_SPARK_CONNECTION_MANAGER.getProps());
 
-        System.out.println(" --------------- Data persisted into sellers_trades_count ----------------------- ");
+        System.out.println(" --------------- Data persisted into tables ----------------------- ");
     }
 
 

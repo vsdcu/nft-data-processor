@@ -10,7 +10,7 @@ import org.dcu.database.DcuSparkConnectionManager;
 import org.dcu.database.MoralisConnectionManager;
 
 import static org.apache.spark.sql.functions.*;
-import static org.dcu.util.NFTMinterNameGenerator.generateRandomName;
+import static org.dcu.util.RandomNameGenerator.generateRandomMintersName;
 
 
 /**
@@ -35,10 +35,12 @@ public class CollectionMinters {
 
         System.out.println(">>>> Finding Top Minters from table: " + tableName);
 
-        UserDefinedFunction randomNameUDF = udf((String s) -> generateRandomName(), DataTypes.StringType);
+        UserDefinedFunction randomNameUDF = udf((String s) -> generateRandomMintersName(), DataTypes.StringType);
 
         spark.read()
-                .jdbc(MORALIS_CONNECTION_MANAGER.getUrl(), tableName, "id", 0, 125000, 128, MORALIS_CONNECTION_MANAGER.getProps())
+                .jdbc(MORALIS_CONNECTION_MANAGER.getUrl(),
+                        tableName, "id", 0, 125000, 128,
+                        MORALIS_CONNECTION_MANAGER.getProps())
                 .select(col("minter_address"),
                         col("nft_address"),
                         col("token_id"),
@@ -55,12 +57,6 @@ public class CollectionMinters {
         String query_contract_type_count = "select contract_type, count(*) as cnt from tempView group by contract_type order by cnt desc";
         String query_contract_types_in_collection = "select nft_address, contract_type, count(*) as cnt " +
                 "from tempView group by nft_address, contract_type order by nft_address, contract_type, cnt desc";
-
-        // Execute the query and save the result
-/*        Dataset<Row> df_1 = spark.sql(query_top_minters).repartitionByRange(128, col("id").asc())
-                .withColumn("partition_id", spark_partition_id())
-                .sortWithinPartitions(col("id").asc())
-                .withColumn("minter_name", randomNameUDF.apply(col("minter_address")));*/
 
         Dataset<Row> df_1 = spark.sql(query_top_minters)
                 .repartition(col("minter_address"))
