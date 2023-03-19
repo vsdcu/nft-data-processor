@@ -41,7 +41,7 @@ public class CollectionTrades {
         //load data in dataframe
         Dataset<Row> rowDataset = spark.read().jdbc(MORALIS_CONNECTION_MANAGER.getUrl(), tableToReadData, MORALIS_CONNECTION_MANAGER.getProps())
                 .select("nft_address", "token_id")
-                .withColumn("row_num", monotonically_increasing_id());;
+                .withColumn("row_num", monotonically_increasing_id());
 
         rowDataset.repartitionByRange(NUM_PARTITIONS, col("row_num")).cache();
 
