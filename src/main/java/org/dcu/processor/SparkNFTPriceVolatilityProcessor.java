@@ -2,9 +2,9 @@ package org.dcu.processor;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.sql.SparkSession;
-import org.dcu.datacollector.NFTValueProposition;
+import org.dcu.datacollector.NFTVolatilityProposition;
 
-public class SparkNFTValuePropositionProcessor {
+public class SparkNFTPriceVolatilityProcessor {
 
     public static void main(String[] args) {
 
@@ -23,15 +23,15 @@ public class SparkNFTValuePropositionProcessor {
 //                .set("spark.executor.instances", "4")
 //                .set("spark.executor.cores", "4")
 //                .set("spark.executor.memory", "6500m")
-//                .set("spark.default.parallelism", "32028")
-//                .set("spark.sql.shuffle.partitions", "32028")
+//                .set("spark.default.parallelism", "128")
+//                .set("spark.sql.shuffle.partitions", "128")
 //                .set("spark.driver.maxResultSize", "1g");
 
         SparkSession spark = SparkSession.builder().config(conf).getOrCreate();
-        System.out.println(">>>> Job to find the value propositions for the NFTs : " + spark);
+        System.out.println(">>>> Job to find the volatility for the NFTs : " + spark);
 
         //find total trades for each collection
-        NFTValueProposition.findNFTsValueProposition(spark);
+        NFTVolatilityProposition.findNFTsVolatility(spark);
 
         spark.stop();
 
