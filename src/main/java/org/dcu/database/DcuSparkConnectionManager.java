@@ -4,8 +4,13 @@ import java.util.Properties;
 
 public class DcuSparkConnectionManager {
 
+    // derived tables
+
+    public static final String TABLE_NFT_VALUE_PROPOSITION = "full_nft_value_propositions";
 
     public  static final String TABLE_NFT_CONTRACT_ENTITY = "mrc_parsed_nft_contract_data";
+
+    public  static final String TABLE_NFT_COLLECTION_INFO = "full_nft_collection_info";
 
     private String driverClass = "com.mysql.cj.jdbc.Driver";
 
