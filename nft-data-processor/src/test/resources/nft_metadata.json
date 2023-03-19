@@ -1,0 +1,88 @@
+{
+  "token_hash": "6ae7019fc05a3cba8ce57a7b667247ec",
+  "token_address": "0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270",
+  "token_id": "10000003",
+  "block_number_minted": "11667718",
+  "amount": "1",
+  "contract_type": "ERC721",
+  "name": "Art Blocks",
+  "symbol": "BLOCKS",
+  "token_uri": "https://api.artblocks.io/token/10000003",
+  "metadata": "{\"platform\":\"Art Blocks Curated\",\"tokenID\":\"10000003\",\"series\":2,\"aspect_ratio\":1,\"payout_address\":\"0x6C093Fe8bc59e1e0cAe2Ec10F0B717D3D182056B\",\"name\":\"NimBuds #3\",\"minted\":true,\"artist\":\"Bryan Brinkman\",\"description\":\"A collection of on-chain, generative cumulonimbus buddies. Created using vanilla javascript, each unique NimBud features random wires, colors, eyes, mouths, cloud bodies, and more. Each with their own personality.\",\"script_type\":\"js@na\",\"project_id\":\"10\",\"curation_status\":\"curated\",\"heritage_curation_status\":\"curated series 2\",\"image\":\"https://media.artblocks.io/10000003.png\",\"generator_url\":\"https://generator.artblocks.io/10000003\",\"animation_url\":\"https://generator.artblocks.io/10000003\",\"royaltyInfo\":{\"artistAddress\":\"0x1e8e749b2b578e181ca01962e9448006772b24a2\",\"additionalPayee\":\"0x4944303979b8d8da50cce0f1c145c715950a7abe\",\"additionalPayeePercentage\":40,\"royaltyFeeByID\":5},\"collection_name\":\"NimBuds by Bryan Brinkman\",\"website\":null,\"token_hash\":\"0x0e2b80e31f5d9889ea182e2363ad078881f4516aa6c3e00987e2c5bde370c56b\",\"external_url\":\"https://artblocks.io/collections/curated/projects/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/10/tokens/10000003\",\"features\":{\"Blink Rate\":\"8 seconds\",\"Face Color\":\"red\",\"Cloud Blobs\":6,\"Mouth Width\":\"44\",\"Smile Amount\":\"33\",\"Eyebrow Angle\":\"37\",\"Mystery Feature\":\"18 Wires / 7 Dangling / 2 Hidden\"},\"traits\":[{\"trait_type\":\"NimBuds\",\"value\":\"All NimBuds\"},{\"trait_type\":\"NimBuds\",\"value\":\"Blink Rate: 8 seconds\"},{\"trait_type\":\"NimBuds\",\"value\":\"Face Color: red\"},{\"trait_type\":\"NimBuds\",\"value\":\"Cloud Blobs: 6\"},{\"trait_type\":\"NimBuds\",\"value\":\"Mouth Width: 44\"},{\"trait_type\":\"NimBuds\",\"value\":\"Smile Amount: 33\"},{\"trait_type\":\"NimBuds\",\"value\":\"Eyebrow Angle: 37\"},{\"trait_type\":\"NimBuds\",\"value\":\"Mystery Feature: 18 Wires / 7 Dangling / 2 Hidden\"}],\"is_static\":false,\"license\":\"NFT License\"}",
+  "last_token_uri_sync": "2022-12-15T20:39:09.995Z",
+  "last_metadata_sync": "2022-12-15T20:39:20.939Z",
+  "minter_address": "0xd2927a91570146218ed700566df516d67c5ecfab",
+  "normalized_metadata": {
+    "name": "NimBuds #3",
+    "description": "A collection of on-chain, generative cumulonimbus buddies. Created using vanilla javascript, each unique NimBud features random wires, colors, eyes, mouths, cloud bodies, and more. Each with their own personality.",
+    "animation_url": null,
+    "external_link": null,
+    "image": "https://media.artblocks.io/10000003.png",
+    "attributes": [
+      {
+        "trait_type": "NimBuds",
+        "value": "All NimBuds",
+        "display_type": null,
+        "max_value": null,
+        "trait_count": 0,
+        "order": null
+      },
+      {
+        "trait_type": "NimBuds",
+        "value": "Blink Rate: 8 seconds",
+        "display_type": null,
+        "max_value": null,
+        "trait_count": 0,
+        "order": null
+      },
+      {
+        "trait_type": "NimBuds",
+        "value": "Face Color: red",
+        "display_type": null,
+        "max_value": null,
+        "trait_count": 0,
+        "order": null
+      },
+      {
+        "trait_type": "NimBuds",
+        "value": "Cloud Blobs: 6",
+        "display_type": null,
+        "max_value": null,
+        "trait_count": 0,
+        "order": null
+      },
+      {
+        "trait_type": "NimBuds",
+        "value": "Mouth Width: 44",
+        "display_type": null,
+        "max_value": null,
+        "trait_count": 0,
+        "order": null
+      },
+      {
+        "trait_type": "NimBuds",
+        "value": "Smile Amount: 33",
+        "display_type": null,
+        "max_value": null,
+        "trait_count": 0,
+        "order": null
+      },
+      {
+        "trait_type": "NimBuds",
+        "value": "Eyebrow Angle: 37",
+        "display_type": null,
+        "max_value": null,
+        "trait_count": 0,
+        "order": null
+      },
+      {
+        "trait_type": "NimBuds",
+        "value": "Mystery Feature: 18 Wires / 7 Dangling / 2 Hidden",
+        "display_type": null,
+        "max_value": null,
+        "trait_count": 0,
+        "order": null
+      }
+    ]
+  }
+}
