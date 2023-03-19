@@ -856,12 +856,23 @@
       <simple-id uuid='{FEC175EB-A293-4F95-80BA-AC90982345A0}' />
     </worksheet>
     <worksheet name='Sheet 6'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run>TESTE TESTE&lt;Sheet Name&gt;</run>
+          </formatted-text>
+        </title>
+      </layout-options>
       <table>
         <view>
           <datasources />
           <aggregation value='true' />
         </view>
-        <style />
+        <style>
+          <style-rule element='cell'>
+            <format attr='color' value='#72b966' />
+          </style-rule>
+        </style>
         <panes>
           <pane selection-relaxation-option='selection-relaxation-allow'>
             <view>
@@ -1070,56 +1081,54 @@
         <zone h='100000' id='8' type-v2='layout-basic' w='100000' x='0' y='0'>
           <zone h='98000' id='34' param='horz' type-v2='layout-flow' w='98400' x='800' y='1000'>
             <zone h='98000' id='31' param='horz' type-v2='layout-flow' w='82400' x='800' y='1000'>
-              <zone h='98000' id='18' param='horz' type-v2='layout-flow' w='82400' x='800' y='1000'>
-                <zone h='98000' id='16' type-v2='layout-basic' w='82400' x='800' y='1000'>
-                  <zone h='49000' id='7' name='TopBuyers' w='20600' x='800' y='1000'>
-                    <zone-style>
-                      <format attr='border-color' value='#000000' />
-                      <format attr='border-style' value='none' />
-                      <format attr='border-width' value='0' />
-                      <format attr='margin' value='4' />
-                    </zone-style>
-                  </zone>
-                  <zone h='49000' id='9' name='TopSellers' w='41200' x='42000' y='1000'>
-                    <zone-style>
-                      <format attr='border-color' value='#000000' />
-                      <format attr='border-style' value='none' />
-                      <format attr='border-width' value='0' />
-                      <format attr='margin' value='4' />
-                    </zone-style>
-                  </zone>
-                  <zone h='49000' id='12' name='TopTradedColl' w='33579' x='800' y='50000'>
-                    <zone-style>
-                      <format attr='border-color' value='#000000' />
-                      <format attr='border-style' value='none' />
-                      <format attr='border-width' value='0' />
-                      <format attr='margin' value='4' />
-                    </zone-style>
-                  </zone>
-                  <zone h='49000' id='15' name='AvgPrice' w='28221' x='34379' y='50000'>
-                    <zone-style>
-                      <format attr='border-color' value='#000000' />
-                      <format attr='border-style' value='none' />
-                      <format attr='border-width' value='0' />
-                      <format attr='margin' value='4' />
-                    </zone-style>
-                  </zone>
-                  <zone h='49000' id='29' name='TopMintedColl' w='20600' x='62600' y='50000'>
-                    <zone-style>
-                      <format attr='border-color' value='#000000' />
-                      <format attr='border-style' value='none' />
-                      <format attr='border-width' value='0' />
-                      <format attr='margin' value='4' />
-                    </zone-style>
-                  </zone>
-                  <zone h='49000' id='32' name='Sheet 6' w='20600' x='21400' y='1000'>
-                    <zone-style>
-                      <format attr='border-color' value='#000000' />
-                      <format attr='border-style' value='none' />
-                      <format attr='border-width' value='0' />
-                      <format attr='margin' value='4' />
-                    </zone-style>
-                  </zone>
+              <zone h='98000' id='16' type-v2='layout-basic' w='82400' x='800' y='1000'>
+                <zone h='49000' id='7' name='TopBuyers' w='20600' x='800' y='1000'>
+                  <zone-style>
+                    <format attr='border-color' value='#000000' />
+                    <format attr='border-style' value='none' />
+                    <format attr='border-width' value='0' />
+                    <format attr='margin' value='4' />
+                  </zone-style>
+                </zone>
+                <zone h='49000' id='9' name='TopSellers' w='41200' x='42000' y='1000'>
+                  <zone-style>
+                    <format attr='border-color' value='#000000' />
+                    <format attr='border-style' value='none' />
+                    <format attr='border-width' value='0' />
+                    <format attr='margin' value='4' />
+                  </zone-style>
+                </zone>
+                <zone h='49000' id='12' name='TopTradedColl' w='33579' x='800' y='50000'>
+                  <zone-style>
+                    <format attr='border-color' value='#000000' />
+                    <format attr='border-style' value='none' />
+                    <format attr='border-width' value='0' />
+                    <format attr='margin' value='4' />
+                  </zone-style>
+                </zone>
+                <zone h='49000' id='15' name='AvgPrice' w='28221' x='34379' y='50000'>
+                  <zone-style>
+                    <format attr='border-color' value='#000000' />
+                    <format attr='border-style' value='none' />
+                    <format attr='border-width' value='0' />
+                    <format attr='margin' value='4' />
+                  </zone-style>
+                </zone>
+                <zone h='49000' id='29' name='TopMintedColl' w='20600' x='62600' y='50000'>
+                  <zone-style>
+                    <format attr='border-color' value='#000000' />
+                    <format attr='border-style' value='none' />
+                    <format attr='border-width' value='0' />
+                    <format attr='margin' value='4' />
+                  </zone-style>
+                </zone>
+                <zone h='49000' id='32' name='Sheet 6' w='20600' x='21400' y='1000'>
+                  <zone-style>
+                    <format attr='border-color' value='#000000' />
+                    <format attr='border-style' value='none' />
+                    <format attr='border-width' value='0' />
+                    <format attr='margin' value='4' />
+                  </zone-style>
                 </zone>
               </zone>
             </zone>
@@ -1146,8 +1155,8 @@
         <devicelayout auto-generated='true' name='Phone'>
           <size maxheight='1800' minheight='1800' sizing-mode='vscroll' />
           <zones>
-            <zone h='100000' id='39' type-v2='layout-basic' w='100000' x='0' y='0'>
-              <zone h='98000' id='38' param='vert' type-v2='layout-flow' w='98400' x='800' y='1000'>
+            <zone h='100000' id='41' type-v2='layout-basic' w='100000' x='0' y='0'>
+              <zone h='84000' id='40' param='vert' type-v2='layout-flow' w='84000' x='8000' y='8000'>
                 <zone fixed-size='280' h='49000' id='7' is-fixed='true' name='TopBuyers' w='20600' x='800' y='1000'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
@@ -1399,10 +1408,10 @@
             <card type='columns' />
           </strip>
           <strip size='2147483647'>
-            <card type='rows' />
+            <card type='title' />
           </strip>
           <strip size='2147483647'>
-            <card type='title' />
+            <card type='rows' />
           </strip>
         </edge>
       </cards>
