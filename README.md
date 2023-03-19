@@ -3,8 +3,8 @@
 Prerequisite
 --------------
 Install spark libs and have a standalone or cluster setup running spark master/workers. I have tested this application successfully on both the environment.
-- GCP Dataproc and 
-- Standalone installaction of Spark on my macbook-pro 16-cores/32GB, 
+- GCP Dataproc (1 master + 6 workers (4 cores + 16GB)) 
+- Standalone installaction of Spark on my macbook-pro 16-cores + 32GB, 
 
 command to build the project
 ---------------------------------------
