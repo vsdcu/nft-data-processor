@@ -14,3 +14,8 @@ example command to run the code -
     --class org.dcu.processor.SparkBuyerSellerProcessor 
     --jars ~/spark-workspace-link/mysql-connector-j-8.0.32.jar 
     ~/spark-workspace-link/nft-data-processor/target/spark-data-processor-1.0-SNAPSHOT.jar
+    
+    
+external dependency Jars - 
+-----------------------------
+mysql-connector-j-8.0.32.jar  - To connect to the MySQL database.
