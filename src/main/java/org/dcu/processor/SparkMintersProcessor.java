@@ -27,7 +27,7 @@ public class SparkMintersProcessor {
                 .set("spark.sql.shuffle.partitions", "128")
                 .set("spark.driver.maxResultSize", "1g");*/
 
-        
+
         SparkSession spark = SparkSession.builder().config(conf).getOrCreate();
         System.out.println(">>>> Job to find the Minters metrics : " + spark);
 

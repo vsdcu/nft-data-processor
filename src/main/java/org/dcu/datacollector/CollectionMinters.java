@@ -68,10 +68,10 @@ public class CollectionMinters {
                 .withColumn("minter_name", randomNameUDF.apply(col("minter_address")));
 
         df_1.write().mode(SaveMode.Overwrite)
-                .jdbc(DCU_SPARK_CONNECTION_MANAGER.getUrl(), "tmp_full_top_minters", DCU_SPARK_CONNECTION_MANAGER.getProps());
+                .jdbc(DCU_SPARK_CONNECTION_MANAGER.getUrl(), "full_top_minters", DCU_SPARK_CONNECTION_MANAGER.getProps());
 
         //df_1.show();
-        System.out.println(" --------------- Data persisted into c_full_top_minters ----------------------- ");
+        System.out.println(" --------------- Data persisted into full_top_minters ----------------------- ");
 /* Sample output
 +--------------------+---+
 |       minterAddress|cnt|
@@ -110,10 +110,10 @@ only showing top 20 rows
                 .sortWithinPartitions(col("row_num").asc())
                 .write()
                 .mode(SaveMode.Overwrite)
-                .jdbc(DCU_SPARK_CONNECTION_MANAGER.getUrl(), "c_full_top_minted_collections", DCU_SPARK_CONNECTION_MANAGER.getProps());
+                .jdbc(DCU_SPARK_CONNECTION_MANAGER.getUrl(), "full_top_minted_collections", DCU_SPARK_CONNECTION_MANAGER.getProps());
 
         //df_2.show();
-        System.out.println(" --------------- Data persisted into tmp_full_top_minted_collections ----------------------- ");
+        System.out.println(" --------------- Data persisted into full_top_minted_collections ----------------------- ");
 /*
 * Sample output
 +--------------------+--------------+----+
@@ -140,10 +140,10 @@ only showing top 20 rows
         df_3.repartitionByRange(NUM_PARTITIONS, col("row_num"))
                 .sortWithinPartitions(col("row_num").asc())
                 .write().mode(SaveMode.Overwrite)
-                .jdbc(DCU_SPARK_CONNECTION_MANAGER.getUrl(), "tmp_full_contract_type_count", DCU_SPARK_CONNECTION_MANAGER.getProps());
+                .jdbc(DCU_SPARK_CONNECTION_MANAGER.getUrl(), "full_contract_type_count", DCU_SPARK_CONNECTION_MANAGER.getProps());
 
         //df_3.show();
-        System.out.println(" --------------- Data persisted into c_full_contract_type_count ----------------------- ");
+        System.out.println(" --------------- Data persisted into full_contract_type_count ----------------------- ");
 
         /* Sample output
         ERC721,   13719091
@@ -161,10 +161,10 @@ only showing top 20 rows
         df_4.repartitionByRange(NUM_PARTITIONS, col("row_num"))
                 .sortWithinPartitions(col("row_num").asc())
                 .write().mode(SaveMode.Overwrite)
-                .jdbc(DCU_SPARK_CONNECTION_MANAGER.getUrl(), "tmp_full_contract_types_in_collection", DCU_SPARK_CONNECTION_MANAGER.getProps());
+                .jdbc(DCU_SPARK_CONNECTION_MANAGER.getUrl(), "full_contract_types_in_collection", DCU_SPARK_CONNECTION_MANAGER.getProps());
 
         //df_4.show();
-        System.out.println(" --------------- Data persisted into c_full_contract_types_in_collection ----------------------- ");
+        System.out.println(" --------------- Data persisted into full_contract_types_in_collection ----------------------- ");
 
 /* * Sample output
         0x00000000000b7F8E8E8Ad148f9d53303Bfe20796,   ERC721,   29
