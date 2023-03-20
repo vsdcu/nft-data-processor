@@ -22,7 +22,17 @@ public class SparkNftCollectionNameSymbol {
 
         SparkConf conf = new SparkConf()
                 .setAppName("Copy and Parse NftContract to DCU_Spark schema")
-                .set("spark.app.id", "spark-nft-collection-info");
+                .set("spark.app.id", "spark-nft-collection-info")
+
+        // vsdcu mac settings
+                .setAppName("Buyers-Sellers-Processor-Job")
+                .set("spark.app.id", "spark-nft-buyer-seller")
+                .set("spark.executor.instances", "6")
+                .set("spark.executor.cores", "4")
+                .set("spark.executor.memory", "10g")
+                .set("spark.default.parallelism", "24")
+                .set("spark.sql.shuffle.partitions", "128")
+                .set("spark.driver.maxResultSize", "2g");
 
         SparkSession sparkSession = SparkSession.builder().config(conf).getOrCreate();
 

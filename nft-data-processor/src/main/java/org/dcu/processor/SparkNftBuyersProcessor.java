@@ -27,16 +27,18 @@ public class SparkNftBuyersProcessor {
         SparkConf conf = new SparkConf()
                 .setAppName("Copy and Parse NftContract to DCU_Spark schema")
                 .set("spark.app.id", SparkNftBuyersProcessor.class.getName())
-                .set("spark.executor.memory", args[0])
-                .set("spark.sql.shuffle.partitions", args[1])
-                .set("spark.driver.maxResultSize", args[2]);
+// vsdcu mac settings
+                .setAppName("Buyers-Sellers-Processor-Job")
+                .set("spark.app.id", "spark-nft-buyer-seller")
+                .set("spark.executor.instances", "6")
+                .set("spark.executor.cores", "4")
+                .set("spark.executor.memory", "10g")
+                .set("spark.default.parallelism", "24")
+                .set("spark.sql.shuffle.partitions", "128")
+                .set("spark.driver.maxResultSize", "2g");
 
 
         System.out.println("*********** Using optimization params as ************");
-
-        System.out.println("spark.executor.memory: "+args[0]);
-        System.out.println("spark.sql.shuffle.partitions: "+args[1]);
-        System.out.println("spark.driver.maxResultSize: "+args[2]);
 
         SparkSession sparkSession = SparkSession.builder().config(conf).getOrCreate();
 

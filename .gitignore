@@ -139,7 +139,7 @@ Desktop.ini
 ######################
 # Maven Wrapper
 ######################
-!.mvn/wrapper/maven-wrapper.jar
+!nft-data-processor/.mvn/wrapper/maven-wrapper.jar
 
 ######################
 # ESLint
