@@ -12,7 +12,7 @@ fi
 # Start the processes
 for ((i=1; i<=$num_processes; i++))
 do
-    # Start a new instance of the MoralisNftContract.py script in the background and redirect output to a log file with the PID in the name
+    # Start a new instance of the MoralisApiNftContract.py script in the background and redirect output to a log file with the PID in the name
     pid=$$
     log_file="log-$i-$pid.txt"
     echo "Process $i started. PID: $pid" >> "$log_file"
@@ -27,10 +27,10 @@ while true
 do
     for ((i=1; i<=$num_processes; i++))
     do
-        pid=$(pgrep -f "MoralisNftContract.py" | sed -n "$i"p)
+        pid=$(pgrep -f "MoralisApiNftContract.py" | sed -n "$i"p)
         if [ -z "$pid" ]
         then
-            # Start a new instance of the MoralisNftContract.py script in the background and redirect output to a log file with the PID in the name
+            # Start a new instance of the MoralisApiNftContract.py script in the background and redirect output to a log file with the PID in the name
             pid=$$
             log_file="log-$i-$pid.txt"
             echo "Process $i restarted. PID: $pid" >> "$log_file"
