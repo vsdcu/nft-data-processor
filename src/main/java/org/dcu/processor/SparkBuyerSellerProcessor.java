@@ -21,7 +21,7 @@ public class SparkBuyerSellerProcessor {
                 .set("spark.sql.shuffle.partitions", "128")
                 .set("spark.driver.maxResultSize", "2g");
 
-// my mac settings
+// my cloud settings
 //                .set("spark.executor.instances", "4")
 //                .set("spark.executor.cores", "4")
 //                .set("spark.executor.memory", "4g")
