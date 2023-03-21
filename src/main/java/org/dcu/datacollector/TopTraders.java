@@ -13,10 +13,20 @@ import static org.apache.spark.sql.functions.*;
 import static org.dcu.util.RandomNameGenerator.generateRandomBuyersSellersName;
 
 /**
- * This will persist output in two tables
+ * This class is responsible for running spark job to calculate the Trends for buyers and sellers.
+ * It provides the deep insight on each NFT, like
+ * - Total buyers
+ * - Total Sellers
+ * - Buyers/Sellers distribution over time.
  *
- * 1. buyers_trades_count
- * 2. sellers_trades_count
+ * This can be used to get the insight and trends on NFTs.
+ *
+ * <p>
+ *     Following tables will hold the output of this processing
+ *
+ *
+ * 1. full_buyers_trades_count
+ * 2. full_sellers_trades_count
  *
  * that can be used to create two metrics
  *

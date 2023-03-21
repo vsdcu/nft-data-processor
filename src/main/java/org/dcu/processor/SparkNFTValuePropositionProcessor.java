@@ -2,18 +2,20 @@ package org.dcu.processor;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.sql.SparkSession;
-import org.dcu.datacollector.TopTraders;
+import org.dcu.datacollector.NFTValueProposition;
 
-public class SparkBuyerSellerProcessor {
+/**
+ * Main class to call the spark job to find the patterns in NFT values.
+ * Calls the data-collector class SparkNFTValuePropositionProcessor
+ */
+public class SparkNFTValuePropositionProcessor {
 
     public static void main(String[] args) {
 
         //spark configuration
         SparkConf conf = new SparkConf()
-
-// my mac settings
-                .setAppName("Buyers-Sellers-Processor-Job")
-                .set("spark.app.id", "spark-nft-buyer-seller")
+                .setAppName("NFT-Value-Proposition-Job")
+                .set("spark.app.id", "spark-nft-value-prop-processor")
                 .set("spark.executor.instances", "6")
                 .set("spark.executor.cores", "4")
                 .set("spark.executor.memory", "10g")
@@ -21,23 +23,19 @@ public class SparkBuyerSellerProcessor {
                 .set("spark.sql.shuffle.partitions", "128")
                 .set("spark.driver.maxResultSize", "2g");
 
-// my cloud settings
+// my mac settings
 //                .set("spark.executor.instances", "4")
 //                .set("spark.executor.cores", "4")
-//                .set("spark.executor.memory", "4g")
+//                .set("spark.executor.memory", "6500m")
 //                .set("spark.default.parallelism", "32028")
-//                .set("spark.sql.shuffle.partitions", "32028");
+//                .set("spark.sql.shuffle.partitions", "32028")
+//                .set("spark.driver.maxResultSize", "1g");
 
         SparkSession spark = SparkSession.builder().config(conf).getOrCreate();
-        System.out.println(">>>> Job to find the top buyers and sellers metrics : " + spark);
+        System.out.println(">>>> Job to find the value propositions for the NFTs : " + spark);
 
-        //find top buyers
-        //TopTraders.findTopBuyers(spark);
-
-        //find top sellers
-        //TopTraders.findTopSellers(spark);
-
-        TopTraders.findTopBuyersSellers(spark);
+        //find total trades for each collection
+        NFTValueProposition.findNFTsValueProposition(spark);
 
         spark.stop();
 

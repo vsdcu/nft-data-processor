@@ -2,6 +2,9 @@ package org.dcu.database;
 
 import java.util.Properties;
 
+/**
+ * Database connection manager class to be used to interact with DCU_SPARK schema which holds all processed data
+ */
 public class DcuSparkConnectionManager {
 
     // derived tables

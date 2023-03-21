@@ -16,14 +16,18 @@ import static org.apache.spark.sql.functions.*;
 
 
 /**
- * This will persist output in one table
  * <p>
- * 1. trades_by_collection
- * <p>
- * that can be used to create two metrics
+ *     Following tables will hold the output of this processing
+ *
+ * 1. full_trades_by_collection
+ * 2. full_token_trades_by_collection
+  * <p>
+ *
+ * that can be used to create following metrics
  * <p>
  * 1. Top traded NFT collections
  * 2. Least traded NFT collections
+ * 3. Top Tokens traded over time
  */
 public class CollectionTrades {
 
@@ -98,7 +102,7 @@ public class CollectionTrades {
         myDataset.repartitionByRange(NUM_PARTITIONS, col("row_num")).foreachPartition(rows -> {
             Connection conn = DriverManager.getConnection(DCU_SPARK_CONNECTION_MANAGER.getUrl(), DCU_SPARK_CONNECTION_MANAGER.getProps());
             //conn.setAutoCommit(false);
-            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO mrtc_token_trades_by_collection (nft_address, token_id, count) VALUES (?, ?, ?)");
+            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO full_token_trades_by_collection (nft_address, token_id, count) VALUES (?, ?, ?)");
             while (rows.hasNext()) {
                 Row row = rows.next();
                 pstmt.setString(1, row.getString(0));

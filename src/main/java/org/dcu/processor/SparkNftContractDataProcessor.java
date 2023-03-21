@@ -21,6 +21,9 @@ import java.util.Properties;
 
 import static org.dcu.database.MoralisConnectionManager.TABLE_NFT_CONTRACTS;
 
+/**
+ * Main class to call the spark job for the parsing the NFT_Contract json
+ */
 public class SparkNftContractDataProcessor {
 
     private static String INSERT_QUERY = "INSERT INTO nft_contract_entity (nftAddress, tokenAddress, tokenId, amount, tokenHash, blockNumberMinted, updatedAt, contractType, name, symbol, tokenUri, lastTokenUriSync, lastMetadataSync, minterAddress) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";

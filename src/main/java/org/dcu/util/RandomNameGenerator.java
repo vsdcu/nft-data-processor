@@ -2,6 +2,10 @@ package org.dcu.util;
 
 import java.util.Random;
 
+/**
+ * Utility class to produce random unique names that can be used to assigned names to addresses.
+ * Useful for the metrics visualization (more intuitive)
+ */
 public class RandomNameGenerator {
     private static final String[] ADJECTIVES = {"Bold", "Swift", "Loud", "Sharp", "Brave", "Vivid", "Cool", "Sly", "Neat", "Huge", "Keen", "Deep", "Calm", "Lush", "Wild", "Wise", "Nice", "Tall", "Fast", "Bright"};
     private static final String[] NOUNS = {"Lion", "Tiger", "Bear", "Wolf", "Hawk", "Fox", "Snake", "Raven", "Eagle", "Shark", "Dolphin", "Jaguar", "Panther", "Cougar", "Leopard", "Gorilla", "Rhino", "Saber", "Sword", "Arrow"};

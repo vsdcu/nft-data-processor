@@ -4,6 +4,10 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.sql.SparkSession;
 import org.dcu.datacollector.NFTVolatilityProposition;
 
+/**
+ * Main class to call the spark job for the calculation of volatility related metrics like average, mean and variance.
+ * Calls the data-collector class NFTVolatilityProposition
+ */
 public class SparkNFTPriceVolatilityProcessor {
 
     public static void main(String[] args) {

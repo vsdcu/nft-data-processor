@@ -12,6 +12,25 @@ import java.util.Arrays;
 
 import static org.apache.spark.sql.functions.*;
 
+/**
+ * This class is responsible for running spark job to calculate the Value proposition for each NFT.
+ * It provides the deep insight on each NFT, like frist trade value when that NFT got minted than
+ * how it traded over time and later what is the current value of the NFT which later used to find out
+ * the overall profit or loss for that NFT.
+ *
+ * Note: It is a very long-running job as it is expected to calculate these insight for each NFT available.
+ *
+ * <p>
+ *     Following tables will hold the output of this processing
+ *
+ * 1. full_nft_value_propositions
+ * <p>
+ * that can be used to create metrics
+ * <p>
+ * 1. Top appreciated NFT
+ * 2. Least appreciated NFT
+ */
+
 public class NFTValueProposition {
 
     public static final MoralisConnectionManager MORALIS_CONNECTION_MANAGER = new MoralisConnectionManager();
@@ -39,37 +58,6 @@ public class NFTValueProposition {
                 .repartition(num_partitions, col("nftAddressHash"))
                 .cache();
         //df.show();
-
-/*        Dataset<Row> firstTransfer = df
-                .repartition(num_partitions)
-                .groupBy(col("nft_address"), col("token_id"))
-                .agg(min(col("block_timestamp")).as("first_timestamp"),
-                        first(col("value")).cast(new DecimalType(38,0)).as("first_transfer"))
-                .withColumn("row_num", monotonically_increasing_id());
-
-        Dataset<Row> lastTransfer = df
-                .repartition(num_partitions)
-                .groupBy(col("nft_address"), col("token_id"))
-                .agg(max(col("block_timestamp")).as("last_timestamp"),
-                        last(col("value")).cast(new DecimalType(38,0)).as("last_transfer"))
-                .withColumn("row_num", monotonically_increasing_id());
-
-        Dataset<Row> difference = firstTransfer.repartitionByRange(col("row_num")).join(lastTransfer,
-                        firstTransfer.col("nft_address").equalTo(lastTransfer.col("nft_address"))
-                                .and(firstTransfer.col("token_id").equalTo(lastTransfer.col("token_id"))))
-                .withColumn("difference", expr("last_transfer - first_transfer").cast(new DecimalType(38,0)))
-                .select(firstTransfer.col("nft_address"), firstTransfer.col("token_id"),
-                        firstTransfer.col("first_transfer"), lastTransfer.col("last_transfer"),
-                        col("difference"));
-                //.orderBy(desc("difference"));
-
-        Dataset<Row> diff_df_with_rowNum = difference.withColumn("row_num", monotonically_increasing_id());
-        diff_df_with_rowNum.cache();
-
-        diff_df_with_rowNum.repartitionByRange(num_partitions, col("row_num")).write()
-                .mode(SaveMode.Overwrite)
-                .jdbc(DCU_SPARK_CONNECTION_MANAGER.getUrl(), "full_nft_value_propositions", DCU_SPARK_CONNECTION_MANAGER.getProps());*/
-
 
 // First, create two datasets with the first and last transfers
         Dataset<Row> firstTransfer = df.groupBy(col("nft_address"), col("token_id"))
@@ -101,7 +89,7 @@ public class NFTValueProposition {
                 .repartition(num_partitions, col("nft_address"), col("token_id"))
                 .write()
                 .mode(SaveMode.Overwrite)
-                .jdbc(DCU_SPARK_CONNECTION_MANAGER.getUrl(), "c_full_nft_value_propositions", DCU_SPARK_CONNECTION_MANAGER.getProps());
+                .jdbc(DCU_SPARK_CONNECTION_MANAGER.getUrl(), "full_nft_value_propositions", DCU_SPARK_CONNECTION_MANAGER.getProps());
 
 /* Sample output of the above logic
 +--------------------+-----------+-------------------+--------------------+--------------------+
