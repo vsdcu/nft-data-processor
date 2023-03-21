@@ -7,6 +7,31 @@ import org.dcu.database.MoralisConnectionManager;
 
 import static org.apache.spark.sql.functions.*;
 
+/**
+ * This class is responsible for running spark job to calculate the Volatility for each NFT.
+ * It provides the deep insight on each NFT, like
+ * - Average value
+ * - Mean value
+ * - Variance
+ *
+ * This can be used to get the insight and trends on NFTs trading patterns and potentially for predictions.
+ *
+ * Note: It is a very long-running job as it is expected to calculate these insight for each NFT collection available.
+ *
+ * <p>
+ *     Following tables will hold the output of this processing
+ *
+ * 1. full_nft_collections_avg_price
+ * 2. full_nft_collections_mean_price
+ * 3. full_nft_collections_variance_price
+ *
+ * <p>
+ * that can be used to create metrics
+ * <p>
+ * 1. Avg price
+ * 2. Mean price
+ * 3. Variance for each NFT collection against it average price
+ */
 public class NFTVolatilityProposition {
 
     public static final MoralisConnectionManager MORALIS_CONNECTION_MANAGER = new MoralisConnectionManager();

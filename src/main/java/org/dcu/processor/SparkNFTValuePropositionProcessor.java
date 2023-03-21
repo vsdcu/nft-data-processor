@@ -4,6 +4,10 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.sql.SparkSession;
 import org.dcu.datacollector.NFTValueProposition;
 
+/**
+ * Main class to call the spark job to find the patterns in NFT values.
+ * Calls the data-collector class SparkNFTValuePropositionProcessor
+ */
 public class SparkNFTValuePropositionProcessor {
 
     public static void main(String[] args) {

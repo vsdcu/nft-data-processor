@@ -4,6 +4,10 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.sql.SparkSession;
 import org.dcu.datacollector.TopTraders;
 
+/**
+ * Main class to call the spark job for the calculation of Buyers and Sellers related metrics.
+ * Calls the data-collector class TopTraders
+ */
 public class SparkBuyerSellerProcessor {
 
     public static void main(String[] args) {

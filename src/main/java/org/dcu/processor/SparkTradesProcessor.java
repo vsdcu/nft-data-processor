@@ -4,6 +4,10 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.sql.SparkSession;
 import org.dcu.datacollector.CollectionTrades;
 
+/**
+ * Main class to call the spark job to find the trends in NFT trades happened over time.
+ * Calls the data-collector class SparkTradesProcessor
+ */
 public class SparkTradesProcessor {
 
     public static void main(String[] args) {

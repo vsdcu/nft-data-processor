@@ -4,6 +4,10 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.sql.SparkSession;
 import org.dcu.datacollector.CollectionMinters;
 
+/**
+ * Main class to call the spark job for the calculation of Minters, Collections related metrics.
+ * Calls the data-collector class CollectionMinters
+ */
 public class SparkMintersProcessor {
 
     public static void main(String[] args) {

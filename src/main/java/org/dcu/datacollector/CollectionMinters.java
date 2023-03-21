@@ -14,14 +14,21 @@ import static org.dcu.util.RandomNameGenerator.generateRandomMintersName;
 
 
 /**
- * This will persist output in one table
+ * It uses SparkSQL to perform the job.
+ * I used SparkSQL to filter out the processed data efficiently without re-processing
+ *
+ *
  * <p>
- * 1. trades_by_collection
+ *     Following tables will hold the output of this processing
+ *
+ * 1. full_top_minted_collections
+ * 2. full_contract_type_count
+ * 3. full_contract_types_in_collection
  * <p>
- * that can be used to create two metrics
+ * that can be used to create following metrics
  * <p>
- * 1. Top traded NFT collections
- * 2. Least traded NFT collections
+ * 1. Top minters
+ * 2. Profitable Minters vs Losers
  */
 public class CollectionMinters {
 
