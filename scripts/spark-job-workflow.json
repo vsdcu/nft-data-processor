@@ -1,0 +1,60 @@
+{
+  "jobs": [
+    {
+      "step-id": "step1",
+      "sparkJob": {
+        "mainClass": "org.dcu.processor.SparkNftContractDataProcessor",
+        "jarFileUris": [
+        "gs://silver-quest-376918/spark-data-processor-1.0-SNAPSHOT.jar",
+        "gs://silver-quest-376918/mysql-connector-j-8.0.32.jar"
+        ],
+        "args": [],
+        "properties": {},
+        "jobXmls": []
+      },
+      "placement": {
+        "clusterLabels": {
+          "dev:cluster": "true"
+        }
+      }
+    },
+    {
+      "step-id": "step2",
+      "sparkJob": {
+        "mainClass": "org.dcu.processor.SparkMintersProcessor",
+        "jarFileUris": [
+        "gs://silver-quest-376918/spark-data-processor-1.0-SNAPSHOT.jar",
+        "gs://silver-quest-376918/mysql-connector-j-8.0.32.jar"
+        ],
+        "args": [],
+        "properties": {},
+        "jobXmls": []
+      },
+      "placement": {
+        "clusterLabels": {
+          "dev:cluster": "true"
+        }
+      },
+      "prerequisiteStepIds": ["step1"]
+    },
+    {
+      "step-id": "step3",
+      "sparkJob": {
+        "mainClass": "org.dcu.processor.SparkTradesProcessor",
+        "jarFileUris": [
+        "gs://silver-quest-376918/spark-data-processor-1.0-SNAPSHOT.jar",
+        "gs://silver-quest-376918/mysql-connector-j-8.0.32.jar"
+        ],
+        "args": [],
+        "properties": {},
+        "jobXmls": []
+      },
+      "placement": {
+        "clusterLabels": {
+          "dev:cluster": "true"
+        }
+      },
+      "prerequisiteStepIds": ["step1"]
+    }
+  ]
+}
