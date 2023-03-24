@@ -9,6 +9,21 @@ Our analysis reveals several compelling metrics that offer valuable insights reg
 
 Undertaking this project was a fantastic chance for us to delve deeper into the NFT revolution and witness how it is reshaping the digital asset landscape. It is an exciting time to explore the world of NFTs and witness the constant progress and innovation. Our aim is for this project to offer valuable insights and inspire others to participate in this ground-breaking movement.
 
+Data
+-----
+
+In our project, obtaining accurate and high-quality data was crucial to extract useful insights. Initially, we utilized a Kaggle dataset (8 GB) that provided valuable information about the nature of NFT transactions, such as the addresses of NFTs, tokens, and wallet addresses. However, it lacked essential information on crucial aspects such as transaction volumes, buyer, seller and minters information for the NFTs. We also needed data on collection names and values to identify patterns and trends in the market and track the value appreciation over time.
+
+To enrich the dataset, we utilized publicly available Moralis APIs to gather additional data based on the initial dataset. Despite the number of restrictions on API calls, we were able to accumulate approximately 137 GB of additional data in just a few weeks. This decision turned out to be the right one, as it provided us with the comprehensive data we needed to derive more meaningful insights and enrich our initial dataset many folds.
+
+Following are the datasets that we accumulated
+1. Kaggle 8 GB General NFTs related attributes.
+2. Moralis 110 GB Data specific to ERC721 contracts which contains deep information on NFTs, Types, Names and Metadata.
+3. Moralis 27 GB Specific to NFT transfers i.e buyers, sellers, transaction value etc.
+
+
+
+# Developer-notes
 # nft-data-processor
 
 Prerequisite
