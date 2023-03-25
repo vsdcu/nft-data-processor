@@ -21,7 +21,8 @@ Following are the datasets that we accumulated
 2. Moralis 110 GB Data specific to ERC721 contracts which contains deep information on NFTs, Types, Names and Metadata.
 3. Moralis 27 GB Specific to NFT transfers i.e buyers, sellers, transaction value etc.
 
-
+# Technologies and Tools
+![img.png](src/resources/images/img.png)
 
 # Developer-notes
 # nft-data-processor
