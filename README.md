@@ -30,6 +30,9 @@ Following are the datasets that we accumulated
 # Link to the presentation
 [Cloud Systems Assignment 1 Presentation V2.pptx](assignment-reports%2Ffinal-report%2FCloud%20Systems%20Assignment%201%20Presentation%20V2.pptx)
 
+# Link to the dashboard exported
+[Dashboard - NFT-Market.pdf](assignment-reports%2Ffinal-report%2FDashboard%20-%20NFT-Market.pdf)
+
 # Developer-notes
 # nft-data-processor
 
