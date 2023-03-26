@@ -24,6 +24,12 @@ Following are the datasets that we accumulated
 # Technologies and Tools
 ![img.png](src/resources/images/img.png)
 
+# Lik to the final project report
+[Final Report - CA687I Cloud computing - Assignment-1.pdf](assignment-reports%2Ffinal-report%2FFinal%20Report%20-%20CA687I%20Cloud%20computing%20-%20Assignment-1.pdf)
+
+# Link to the presentation
+[Cloud Systems Assignment 1 Presentation V2.pptx](assignment-reports%2Ffinal-report%2FCloud%20Systems%20Assignment%201%20Presentation%20V2.pptx)
+
 # Developer-notes
 # nft-data-processor
 
